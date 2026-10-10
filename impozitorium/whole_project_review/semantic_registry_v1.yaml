@@ -35,6 +35,16 @@ sources:
     XJDF intent resources such as LayoutIntent, ProductionIntent (ISO 21812-1:2019 preview); JDF Layout
     with SignatureName/SheetName partitions, MarkObject and RegisterMark (CIP4 JDF Layout Creator to Imposition
     ICS). Detailed element definitions NOT verified.'
+  SRC.CIP4_LAYOUT_ICS: 'CIP4 JDF 1.4 ''Layout Creator to Imposition ICS'' (2009) as reported by search
+    summaries (cip4.org not reachable): PlacedObject is an abstract superclass; every PlacedObject is
+    a ContentObject or a MarkObject; ContentObjects/MarkObjects are written in Layout Side partitions
+    (not SignatureName/SheetName); CTM applied to the object''s native coordinate system; ClipBox / SourceClipPath;
+    SurfaceContentsBox on Side partitions; ContentObject examples carry CTM, TrimCTM, TrimSize, ClipBox,
+    Ord. XJDF 2.2 normative text NOT accessed.'
+  SRC.CIP4_PAGINATION_CATALOG: 'CIP4 Pagination Catalog v1.5 as reported: a sheet side is divided into
+    signature cells, each receiving one document page plus surrounding margin.'
+  SRC.CIP4_XJDF_INTENT: 'CIP4 ''XJDF for Developers'' presentation (2017) as reported: LayoutIntent carries
+    FinishedDimensions (shape value) and Dimensions (XYPair). XJDF 2.2 specification NOT accessed.'
   SRC.DOMAIN_PRINT: Established print-production usage (e.g. creep and shingling in saddle-stitched booklets;
     trim / crop marks; bleed). Industry explanatory sources, not standards.
   SRC.HUMAN_TASK_05: 'Human/Coordinator task IMPOZITORIUM_CANONICAL_APPLICATION_SEMANTICS_BASELINE_V1_01
@@ -44,16 +54,25 @@ sources:
     Adobe Acrobat help on output intents, PDFlib PDF/X output intents). ICC.2 (iccMAX) not reviewed.'
   SRC.ISO15930_PDFX: ISO 15930 (PDF/X family). Secondary sources state a PDF/X file defines MediaBox plus
     TrimBox or ArtBox, BleedBox when bled, and an OutputIntent. Normative text NOT accessed.
-  SRC.ISO19593_1: 'ISO 19593-1:2018 ''Graphic technology - Use of PDF to associate processing steps and
-    content data - Part 1: Processing steps for packaging and labels'' (title verified via PDF Association
-    and ISO catalogue listings; processing steps carried as optional content groups with groups such as
-    Structural, Dimensions; normative text NOT accessed).'
+  SRC.ISO19593_1: 'ISO 19593-1 ''Graphic technology - Use of PDF to associate processing steps and content
+    data - Part 1: Processing steps for packaging and labels''. Reference edition per Human/Coordinator:
+    ISO 19593-1:2026 (Edition 2); ISO 19593-1:2018 superseded. Independently observed (search summaries;
+    iso.org/pdfa.org not reachable from this environment): ISO 2018 page states replacement by ISO/PRF
+    19593-1; Edition 2 passed DIS/FDIS stages; BSI lists BS ISO 19593-1 published 2026-03-05 as identical
+    adoption. Method: processing-step metadata on optional content groups; group examples Structural,
+    Dimensions, Braille, Legend, Position, White, Varnish; Structural types in the 2018-era draft include
+    Cutting, PartialCutting, Creasing, CuttingCreasing, Perforating, Folding, Punching, Gluing (Edition
+    2 type list NOT verified). Normative text NOT accessed.'
+  SRC.ISO32000_GRAPHICS_STATE: ISO 32000 graphics state current transformation matrix (CTM). Normative
+    text NOT accessed.
   SRC.ISO32000_OPTIONAL_CONTENT: ISO 32000 optional content (OCG / OCMD / OCProperties). Normative text
     NOT accessed; identity confirmed via PDF Association material on ISO 19593-1.
   SRC.ISO32000_PAGE_BOUNDARIES: ISO 32000 (PDF 1.7 / PDF 2.0) page boundaries. Clause 'Page boundaries'
     (cited as 14.11.2 by third-party API references, e.g. setasign SetaPDF PageBoundaries, GemBox PdfPageBoundaryType).
     Normative text NOT accessed in this pass.
   SRC.ISO32000_XOBJECT: ISO 32000 form XObjects and their BBox key. Normative text NOT accessed.
+  SRC.PJTF: 'Adobe Portable Job Ticket Format reference as reported: a page ClipBox is typically set from
+    the TrimBox, with MediaBox or BleedBox as alternatives.'
   SRC.REPO_AGENTS_MD: 'mirror: AGENTS.md (OW-line and EN-line identical)'
   SRC.REPO_AGENT_BRIEFING: 'mirror: doc/agent_briefing.md (OW-line and EN-line identical)'
   SRC.REPO_AGENT_HIERARCHY: 'mirror OW-line: doc/agent_orchestration/IMPOZITORIUM_AGENT_HIERARCHY_POLICY_ACCEPTED_DERIVED_01.md'
@@ -87,7 +106,13 @@ sources:
   SRC.REVIEW_02: 'sandbox: impozitorium/whole_project_review/02_SEMANTIC_AND_ARCHITECTURAL_ALIGNMENT_REVIEW.md'
   SRC.REVIEW_04: 'sandbox: impozitorium/whole_project_review/04_PRODUCT_OPERATION_RECORD_AND_CANONICAL_SEMANTICS_REGISTRY.md
     (HUMAN_ACCEPTED_DIRECTION)'
+  SRC.VENDOR_IMPOSITION_DOCS: 'Vendor imposition documentation as reported (Kodak Prinergy/Preps, Durst
+    Impose Editor, ONYX, OnPrintShop): crop marks, registration marks, fold marks, colour bars; Kodak
+    hierarchy Signature > Sheet > Surface > Page. Vendor usage, not standards.'
 ambiguous_terms:
+  CTM:
+  - PDF.CTM
+  - GEOMETRY.PLACEMENT_TRANSFORM
   D1 / D01 / D-01 / D2:
   - GOVERNANCE.ENGINE_DECISION
   - DEVINFRA.D01_KERNEL_MEDIATION
@@ -138,6 +163,9 @@ ambiguous_terms:
   commit:
   - GOVERNANCE.REPOSITORY_COMMIT
   - ARTIFACT.GENERATED_RESULT_COMMIT
+  content object:
+  - PRODUCTION.PLACED_CONTENT
+  - PRODUCTION.PRODUCTION_OBJECT
   crop:
   - PDF.BOX.CROP
   - OPERATION.KIND.PAGE_GEOMETRY_TRANSFORM
@@ -153,6 +181,7 @@ ambiguous_terms:
   layout:
   - GEOMETRY.LAYOUT_BOX
   - GEOMETRY.LAYOUT_SPACE
+  - PRODUCTION.IMPOSITION_LAYOUT
   - PRODUCTION.STEP_AND_REPEAT_LAYOUT
   normalize:
   - OPERATION.CLASS.NORMALIZE
@@ -792,6 +821,8 @@ entries:
   source_basis:
   - SRC.REPO_STEP_REPEAT
   - SRC.REPO_VAB_LAB
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.PJTF
   standard_alignment: IMPOZITORIUM_EXTENSION
   aliases:
   - clip
@@ -804,7 +835,10 @@ entries:
   relationships: []
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
-  notes: 'Important for Vector AutoBleed: its mirror clips are clip regions, not frames or CropBoxes.'
+  notes: 'Important for Vector AutoBleed: its mirror clips are clip regions, not frames or CropBoxes.
+    [Standards mapping 01] CIP4 ClipBox (rectangular clip of a placed object on a surface, typically set
+    from TrimBox or BleedBox per PJTF) is a placement-level specialization of a clip region; CLOSE_BUT_NOT_SAME,
+    so not an alias.'
 - canonical_id: GEOMETRY.CONTENT_BOUNDS
   canonical_name: content bounds
   semantic_class: PLATFORM_TERM
@@ -823,6 +857,25 @@ entries:
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
   notes: No repository implementation found.
+- canonical_id: GEOMETRY.DOCUMENT_TRANSFORM
+  canonical_name: document transform
+  semantic_class: PLATFORM_TERM
+  definition: Transform that changes the canonical working artifact itself (e.g. page geometry transform,
+    rotation normalization), producing a new Working Document candidate.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REPO_PG_TRANSFORM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.PLACEMENT_TRANSFORM
+  - PDF.CTM
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: 'No CIP4 counterpart: JDF/XJDF describe placement, not modification of the source document (NO_USEFUL_MATCH).'
 - canonical_id: GEOMETRY.FRAMEBOX
   canonical_name: Framebox
   semantic_class: PLATFORM_TERM
@@ -837,6 +890,8 @@ entries:
   - SRC.HUMAN_TASK_05
   - SRC.REVIEW_02
   - SRC.REVIEW_04
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_XJDF_INTENT
   standard_alignment: IMPOZITORIUM_EXTENSION
   aliases:
   - working frame
@@ -861,10 +916,19 @@ entries:
     target: POLICY.FRAME_MATERIALIZATION
   - type: owned_by
     target: PLATFORM.GEOMETRY_CORE
+  - type: related_to
+    target: PRODUCTION.FINISHED_SIZE
+  - type: projected_on_placement_as
+    target: PRODUCTION.PLACED_CONTENT
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
-  notes: Rectangular by definition; remains valid when contour support (GEOMETRY.PRODUCTION_CONTOUR) is
-    added. Spelling 'FrameBox' deprecated because it imitates PDF page-box key naming.
+  notes: 'Rectangular by definition; remains valid when contour support (GEOMETRY.PRODUCTION_CONTOUR)
+    is added. Spelling ''FrameBox'' deprecated because it imitates PDF page-box key naming. [Standards
+    mapping 01] No equivalent industry term demonstrated; remains IMPOZITORIUM_EXTENSION. Framebox <->
+    TrimBox: may be derived from it (via layout box), not equivalent. Framebox <-> finished size / XJDF
+    FinishedDimensions: related (intended product size vs platform working rectangle), not equivalent.
+    Framebox <-> CIP4 TrimSize/TrimCTM: a placed content''s TrimSize/TrimCTM is a placement-level projection
+    of a rectangular finished frame; related, not equivalent.'
 - canonical_id: GEOMETRY.FRAME_INTENT
   canonical_name: frame intent
   semantic_class: PLATFORM_TERM
@@ -920,6 +984,7 @@ entries:
   - SRC.REPO_AGENT_BRIEFING
   - SRC.REPO_PAGE_GEOMETRY_CODE
   - SRC.REVIEW_04
+  - SRC.CIP4_LAYOUT_ICS
   standard_alignment: IMPOZITORIUM_EXTENSION
   aliases:
   - layout basis
@@ -940,7 +1005,8 @@ entries:
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
   notes: 'Platform term derived from standard PDF boxes. Legacy core.normalize_boxes uses an older basis
-    (TrimBox -> BleedBox -> MediaBox): legacy drift, not a competing policy.'
+    (TrimBox -> BleedBox -> MediaBox): legacy drift, not a competing policy. [Standards mapping 01] No
+    CIP4 equivalent (NO_USEFUL_MATCH); not the CIP4 Layout resource.'
 - canonical_id: GEOMETRY.LAYOUT_SPACE
   canonical_name: layout space
   semantic_class: PLATFORM_TERM
@@ -1048,6 +1114,29 @@ entries:
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
   notes: Legacy step_repeat engine uses TrimBox only (drift).
+- canonical_id: GEOMETRY.PLACEMENT_TRANSFORM
+  canonical_name: placement transform
+  semantic_class: PLATFORM_TERM
+  definition: Affine transform that positions an unchanged object (placed content or placed mark) in an
+    imposition / output context. It never changes the canonical working artifact. In CIP4 Layout it is
+    represented by the CTM attribute of a PlacedObject.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  aliases:
+  - CIP4 CTM
+  - PlacedObject CTM
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.DOCUMENT_TRANSFORM
+  - PDF.CTM
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: Mathematically an engine-neutral affine transform (IMPOSITORIUM_AFFINE_COLUMN_VECTOR_V1); generic
+    affine maths is NOT called CTM outside this placement context.
 - canonical_id: GEOMETRY.PRODUCTION_CONTOUR
   canonical_name: production contour
   semantic_class: PLATFORM_TERM
@@ -1071,10 +1160,14 @@ entries:
   relationships:
   - type: referenced_by_frame
     target: GEOMETRY.FRAMEBOX
+  - type: realizable_as
+    target: PDF.PROCESSING_STEPS
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
   notes: Contour architecture NOT finalized. TECHNICAL_OBJECT.FINISHING_CONTOUR is the drawn line for
-    a device.
+    a device. [Standards mapping 01] Retained as platform abstraction (physical-object outline). ISO 19593-1
+    describes processing-step objects (e.g. Structural Cutting) that can REALIZE such an outline in PDF;
+    this is a representation, not the same concept. Status stays PROVISIONAL.
 - canonical_id: GEOMETRY.SPACE.DEVICE_PIXEL
   canonical_name: device pixel space
   semantic_class: PLATFORM_TERM
@@ -1098,6 +1191,7 @@ entries:
   domain: GEOMETRY
   source_basis:
   - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  - SRC.CIP4_LAYOUT_ICS
   standard_alignment: IMPOZITORIUM_EXTENSION
   aliases:
   - IMPOSED_SHEET_SPACE
@@ -1105,9 +1199,12 @@ entries:
   deprecated_aliases: []
   not_equivalent_to:
   - GEOMETRY.TARGET_CANVAS
-  relationships: []
+  relationships:
+  - type: space_of
+    target: PRODUCTION.SURFACE
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
+  notes: '[Standards mapping 01] CIP4 places objects in surface coordinates; ''SheetGeometry'' not introduced.'
 - canonical_id: GEOMETRY.SPACE.PAGE_MEDIA
   canonical_name: page media space
   semantic_class: PLATFORM_TERM
@@ -1932,6 +2029,24 @@ entries:
     target: POLICY.LAYOUT_BOX_PRIORITY
   owner: PLATFORM.STRUCTURAL_PDF_CORE
   status: CANONICAL_V1
+- canonical_id: PDF.CTM
+  canonical_name: PDF current transformation matrix
+  semantic_class: STANDARD_TERM
+  definition: The current transformation matrix of the PDF graphics state, mapping user space to device
+    space during content rendering.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_GRAPHICS_STATE
+  standard_alignment: STANDARD_ALIGNED
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.DOCUMENT_TRANSFORM
+  - GEOMETRY.PLACEMENT_TRANSFORM
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: Bare 'CTM' is ambiguous (PDF graphics state vs CIP4 PlacedObject attribute).
 - canonical_id: PDF.FORM_XOBJECT
   canonical_name: form XObject
   semantic_class: STANDARD_TERM
@@ -2115,7 +2230,10 @@ entries:
   relationships: []
   owner: PLATFORM.STRUCTURAL_PDF_CORE
   status: NEEDS_STANDARD_REVIEW
-  notes: Candidate realization for technical objects; platform representation NOT_DECIDED.
+  notes: Candidate realization for technical objects; platform representation NOT_DECIDED. [Standards
+    mapping 01] Reference edition ISO 19593-1:2026 (Edition 2) per Human/Coordinator; 2018 edition superseded.
+    Publication of the 2026 ISO edition could not be independently confirmed from this environment (ISO/PRF
+    and BS ISO 2026-03-05 evidence only).
 - canonical_id: PDF.USER_UNIT
   canonical_name: UserUnit
   semantic_class: STANDARD_TERM
@@ -2336,6 +2454,7 @@ entries:
   source_basis:
   - SRC.DOMAIN_PRINT
   - SRC.REPO_AGENTS_MD
+  - SRC.CIP4_LAYOUT_ICS
   standard_alignment: ESTABLISHED_DOMAIN_TERM
   aliases: []
   deprecated_aliases: []
@@ -2344,6 +2463,8 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: CANONICAL_V1
+  notes: '[Standards mapping 01] JDF StrippingParams carries per-edge bleed values (e.g. BleedFace, BleedSpine,
+    BleedHead, BleedFoot) as reported; related, not mapped.'
 - canonical_id: PRODUCTION.CREEP
   canonical_name: creep
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2398,6 +2519,7 @@ entries:
   - SRC.DOMAIN_PRINT
   - SRC.ISO32000_PAGE_BOUNDARIES
   - SRC.REPO_PAGE_GEOMETRY_CHARTER
+  - SRC.CIP4_XJDF_INTENT
   standard_alignment: ESTABLISHED_DOMAIN_TERM
   aliases: []
   deprecated_aliases: []
@@ -2406,6 +2528,8 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: CANONICAL_V1
+  notes: '[Standards mapping 01] Related to XJDF LayoutIntent FinishedDimensions (a shape value, possibly
+    3D) and to CIP4 placement TrimSize; CLOSE_BUT_NOT_SAME, no alias added.'
 - canonical_id: PRODUCTION.FOLDING_SCHEME
   canonical_name: folding scheme
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2431,13 +2555,45 @@ entries:
   source_basis:
   - SRC.CIP4_JDF_XJDF
   - SRC.DOMAIN_PRINT
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.VENDOR_IMPOSITION_DOCS
   standard_alignment: ESTABLISHED_DOMAIN_TERM
   aliases: []
   deprecated_aliases: []
   not_equivalent_to: []
-  relationships: []
+  relationships:
+  - type: produces
+    target: PRODUCTION.IMPOSITION_LAYOUT
   owner: PRODUCTION
   status: CANONICAL_V1
+  notes: '[Standards mapping 01] Matches CIP4 description of imposition as placing pages and marks onto
+    sheet surfaces.'
+- canonical_id: PRODUCTION.IMPOSITION_LAYOUT
+  canonical_name: imposition layout
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: The description of which placed objects (content and marks) appear where on each sheet surface,
+    organised by signature / sheet / side. Reuses the CIP4 JDF/XJDF Layout resource concept.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_JDF_XJDF
+  - SRC.CIP4_PAGINATION_CATALOG
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - Layout (CIP4)
+  deprecated_aliases:
+  - SheetComposition
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_BOX
+  - GEOMETRY.LAYOUT_SPACE
+  - PRODUCTION.STEP_AND_REPEAT_LAYOUT
+  relationships:
+  - type: contains
+    target: PRODUCTION.PLACED_OBJECT
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: '''SheetComposition'' is NOT introduced; it resolves here. CIP4 ''Layout'' collides with layout_box:
+    always qualify (ambiguous term ''layout'').'
 - canonical_id: PRODUCTION.JOB
   canonical_name: production job
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2538,6 +2694,86 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: PROVISIONAL
+- canonical_id: PRODUCTION.PLACED_CONTENT
+  canonical_name: placed content
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: One placement of unchanged content (a page / production object) on a sheet surface, positioned
+    by a placement transform and clipped by a placement clip. Reuses the CIP4 JDF/XJDF ContentObject concept
+    (CTM, ClipBox, TrimCTM, TrimSize, Ord).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - ContentObject
+  - placed content object
+  deprecated_aliases:
+  - PlacedInstance
+  not_equivalent_to:
+  - GEOMETRY.FRAMEBOX
+  - PRODUCTION.PRODUCTION_OBJECT
+  relationships:
+  - type: instance_of
+    target: PRODUCTION.PRODUCTION_OBJECT
+  - type: positioned_by
+    target: GEOMETRY.PLACEMENT_TRANSFORM
+  - type: clipped_by
+    target: GEOMETRY.CLIP_REGION
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: The proposed term PlacedInstance is NOT introduced; it resolves here. TrimSize/TrimCTM describe
+    the finished-trim rectangle of this placement (placement-level projection), not a platform working
+    frame.
+- canonical_id: PRODUCTION.PLACED_MARK
+  canonical_name: placed mark
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: One placement of a mark / technical object on a sheet surface. Reuses the CIP4 JDF/XJDF
+    MarkObject concept (may carry metadata such as RegisterMark or colour measuring fields).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - MarkObject
+  deprecated_aliases: []
+  not_equivalent_to:
+  - TECHNICAL_OBJECT.TECHNICAL_OBJECT
+  relationships:
+  - type: realizes_placement_of
+    target: TECHNICAL_OBJECT.TECHNICAL_OBJECT
+  - type: positioned_by
+    target: GEOMETRY.PLACEMENT_TRANSFORM
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.PLACED_OBJECT
+  canonical_name: placed object
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: 'Any object placed on a sheet surface in an imposition layout: either placed content or
+    a placed mark. Reuses the CIP4 JDF/XJDF PlacedObject concept (abstract superclass of ContentObject
+    and MarkObject).'
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - PlacedObject
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships:
+  - type: generalizes
+    target: PRODUCTION.PLACED_CONTENT
+  - type: generalizes
+    target: PRODUCTION.PLACED_MARK
+  - type: placed_on
+    target: PRODUCTION.SURFACE
+  - type: positioned_by
+    target: GEOMETRY.PLACEMENT_TRANSFORM
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: Mapping SAME at concept level per JDF 1.4 Layout ICS; XJDF 2.2 normative definition not reviewed.
 - canonical_id: PRODUCTION.PRODUCTION_INTENT
   canonical_name: production intent
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2556,6 +2792,34 @@ entries:
   owner: PRODUCTION
   status: NEEDS_STANDARD_REVIEW
   notes: Aligns conceptually with JDF/XJDF Intent; field mapping NOT verified.
+- canonical_id: PRODUCTION.PRODUCTION_OBJECT
+  canonical_name: production object
+  semantic_class: PLATFORM_TERM
+  definition: The single finished item to be produced from an artifact page, described by its working
+    geometry (Framebox), bleed semantics, optional production contour and artifact identity. Exists before
+    and independently of any placement.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.PAGE
+  - PRODUCTION.PLACED_CONTENT
+  relationships:
+  - type: has_frame
+    target: GEOMETRY.FRAMEBOX
+  - type: may_have_contour
+    target: GEOMETRY.PRODUCTION_CONTOUR
+  - type: has_extent
+    target: GEOMETRY.PLACEMENT_OBJECT_EXTENT
+  owner: PLATFORM.GEOMETRY_CORE
+  status: PROVISIONAL
+  notes: 'Not equivalent to CIP4 ContentObject: ContentObject is placement-level (one instance on a surface);
+    the production object carries source-level semantics (Framebox, contour, bleed, artifact identity)
+    that ContentObject does not.'
 - canonical_id: PRODUCTION.SALVAGE_MODE
   canonical_name: salvage mode
   semantic_class: POLICY_TERM
@@ -2571,6 +2835,26 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: PROVISIONAL
+- canonical_id: PRODUCTION.SHEET
+  canonical_name: sheet
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: A press sheet (physical substrate unit) in imposition; CIP4 Layout uses SheetName partitions.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.VENDOR_IMPOSITION_DOCS
+  - SRC.DOMAIN_PRINT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - press sheet
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships:
+  - type: has_surface
+    target: PRODUCTION.SURFACE
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: '''SheetGeometry'' is NOT introduced: sheet dimensions belong to the sheet; coordinates use GEOMETRY.SPACE.IMPOSED_SHEET.'
 - canonical_id: PRODUCTION.SHEET_ORIENTATION
   canonical_name: sheet orientation
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2595,6 +2879,8 @@ entries:
   - SRC.DOMAIN_PRINT
   - SRC.CIP4_JDF_XJDF
   - SRC.REPO_BOOKLET_LAB
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_PAGINATION_CATALOG
   standard_alignment: NEEDS_STANDARD_REVIEW
   aliases:
   - folded signature
@@ -2604,7 +2890,9 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: CANONICAL_V1
-  notes: JDF uses Signature in Layout partitioning; exact JDF semantics not verified.
+  notes: JDF uses Signature in Layout partitioning; exact JDF semantics not verified. [Standards mapping
+    01] CIP4 Layout partitions by SignatureName; Pagination Catalog defines signature cells. Folded-section
+    meaning consistent; mapping CLOSE_BUT_NOT_SAME pending normative review.
 - canonical_id: PRODUCTION.STEP_AND_REPEAT_LAYOUT
   canonical_name: step-and-repeat layout parameters
   semantic_class: LEGACY_TERM
@@ -2622,6 +2910,28 @@ entries:
   owner: MODULE.STEP_AND_REPEAT
   status: LEGACY
   notes: '''layout'' alone is ambiguous (layout box, Qt layout, JDF Layout).'
+- canonical_id: PRODUCTION.SURFACE
+  canonical_name: surface
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: One printed side (front or back) of a sheet on which placed objects are positioned; CIP4
+    Layout Side partition / Surface. CIP4 SurfaceContentsBox bounds the area of a surface containing placed
+    objects.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.VENDOR_IMPOSITION_DOCS
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - sheet side
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships:
+  - type: coordinate_space
+    target: GEOMETRY.SPACE.IMPOSED_SHEET
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: SurfaceContentsBox has no platform equivalent yet (NO_USEFUL_MATCH); it is recorded here, not
+    as a separate entry.
 - canonical_id: PRODUCTION.TRIMMING
   canonical_name: trimming
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2691,7 +3001,9 @@ entries:
   source_basis:
   - SRC.REPO_MARK_REGISTRIES
   - SRC.CIP4_JDF_XJDF
-  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.VENDOR_IMPOSITION_DOCS
+  standard_alignment: NEEDS_STANDARD_REVIEW
   aliases:
   - cutmark
   deprecated_aliases: []
@@ -2699,7 +3011,9 @@ entries:
   relationships: []
   owner: TECHNICAL_OBJECT
   status: CANONICAL_V1
-  notes: JDF names a CutMark; mapping not verified.
+  notes: JDF names a CutMark; mapping not verified. [Standards mapping 01] Accessible CIP4 sources mention
+    'cut, fold, or register marks' generically; a JDF CutMark element was NOT confirmed. Mapping remains
+    NEEDS_STANDARD_REVIEW.
 - canonical_id: TECHNICAL_OBJECT.CUT_MARK_PROFILE
   canonical_name: cut-mark profile
   semantic_class: POLICY_TERM
@@ -2729,9 +3043,14 @@ entries:
   deprecated_aliases: []
   not_equivalent_to:
   - GEOMETRY.PRODUCTION_CONTOUR
-  relationships: []
+  relationships:
+  - type: realizable_as
+    target: PDF.PROCESSING_STEPS
   owner: TECHNICAL_OBJECT
   status: NEEDS_STANDARD_REVIEW
+  notes: '[Standards mapping 01] Closest standard counterpart: ISO 19593-1 Structural processing-step
+    objects (e.g. Cutting, Creasing, Perforating); equivalence of type sets not verified (CLOSE_BUT_NOT_SAME,
+    NEEDS_STANDARD_REVIEW).'
 - canonical_id: TECHNICAL_OBJECT.FOLD_CROSSHAIR
   canonical_name: folding crosshair
   semantic_class: PLATFORM_TERM
@@ -2755,6 +3074,8 @@ entries:
   - SRC.DOMAIN_PRINT
   - SRC.CIP4_JDF_XJDF
   - SRC.REPO_BOOKLET_LAB
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.VENDOR_IMPOSITION_DOCS
   standard_alignment: ESTABLISHED_DOMAIN_TERM
   aliases: []
   deprecated_aliases: []
@@ -2762,6 +3083,7 @@ entries:
   relationships: []
   owner: TECHNICAL_OBJECT
   status: CANONICAL_V1
+  notes: '[Standards mapping 01] Fold marks mentioned in CIP4 imposition description and vendor tools.'
 - canonical_id: TECHNICAL_OBJECT.REGISTRATION_MARK
   canonical_name: registration mark
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2770,6 +3092,7 @@ entries:
   source_basis:
   - SRC.DOMAIN_PRINT
   - SRC.CIP4_JDF_XJDF
+  - SRC.CIP4_LAYOUT_ICS
   standard_alignment: ESTABLISHED_DOMAIN_TERM
   aliases:
   - RegisterMark
@@ -2779,6 +3102,8 @@ entries:
   relationships: []
   owner: TECHNICAL_OBJECT
   status: CANONICAL_V1
+  notes: '[Standards mapping 01] CIP4 Layout ICS mentions RegisterMark entries inside MarkObject (metadata
+    for registration control).'
 - canonical_id: TECHNICAL_OBJECT.SERVICE_TEXT
   canonical_name: service text
   semantic_class: PLATFORM_TERM
@@ -2840,16 +3165,25 @@ entries:
   source_basis:
   - SRC.REVIEW_02
   - SRC.REVIEW_04
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.ISO19593_1
   standard_alignment: IMPOZITORIUM_EXTENSION
   aliases:
   - technical mark
   deprecated_aliases: []
   not_equivalent_to:
   - PDF.PROCESSING_STEPS
-  relationships: []
+  relationships:
+  - type: placed_as
+    target: PRODUCTION.PLACED_MARK
+  - type: realizable_as
+    target: PDF.PROCESSING_STEPS
   owner: TECHNICAL_OBJECT
   status: CANONICAL_V1
-  notes: TECHNICAL_OBJECT_EXACT_PDF_REPRESENTATION = NOT_DECIDED (OCG / ISO 19593 strong candidates).
+  notes: 'TECHNICAL_OBJECT_EXACT_PDF_REPRESENTATION = NOT_DECIDED (OCG / ISO 19593 strong candidates).
+    [Standards mapping 01] Remains the Impozitorium umbrella domain concept (SUPERSET): it includes service
+    text, labels, numbering and contour lines. CIP4 MarkObject is a placement-level realization; ISO 19593
+    processing-step objects are a PDF realization for finishing data. Neither is equivalent to the umbrella.'
 - canonical_id: TECHNICAL_OBJECT.TRIM_MARK
   canonical_name: trim mark
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2858,6 +3192,7 @@ entries:
   source_basis:
   - SRC.DOMAIN_PRINT
   - SRC.REPO_MARK_REGISTRIES
+  - SRC.VENDOR_IMPOSITION_DOCS
   standard_alignment: NEEDS_STANDARD_REVIEW
   aliases:
   - product trim mark
@@ -2869,7 +3204,9 @@ entries:
   status: NEEDS_STANDARD_REVIEW
   notes: 'TRIM_MARK / CROP_MARK relationship = NEEDS_STANDARD_REVIEW (and possibly NEEDS_HUMAN_DECISION).
     ''crop mark'' is NOT deprecated: it is established professional usage; the CropBox collision alone
-    is not a reason to deprecate it.'
+    is not a reason to deprecate it. [Standards mapping 01] Vendor imposition tools (Durst, ONYX, OnPrintShop)
+    predominantly label these ''crop marks''; no standard source found that fixes the trim/crop relationship.
+    Remains NEEDS_STANDARD_REVIEW.'
 - canonical_id: UI.ACTION
   canonical_name: operator action
   semantic_class: PLATFORM_TERM
