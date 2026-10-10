@@ -28,6 +28,22 @@ References such as `01 §8` or `C-04` point to the factual baseline. A few
 additional facts were checked in the mirror for this pass; they are cited
 inline with branch and path.
 
+## Revision note — Bounded Correction 01
+
+```text
+CORRECTION_SCOPE =
+    Define Framebox canonicalization wording                 (§7, §21 D3)
+    structural substrate vs Page Geometry ownership          (§1, §6, §7, §20)
+    booklet/signature convergence wording                    (§9, §19, §20)
+    technical-object PDF representation wording              (§6, §15)
+
+NEW_ARCHITECTURAL_DOMAINS_ADDED =
+    NONE
+
+NEW_IMPLEMENTATION_AUTHORIZATION =
+    NONE
+```
+
 Short names follow `01`: **OW-line** (`derived/agent-hierarchy-policy-accepted-01`
 lineage), **EN-line** (`docs/oc6d2-b4-human-acceptance-01` lineage),
 **OC-line** (`derived/oc1-oc5-accepted-publication-01`).
@@ -76,8 +92,10 @@ substantially correct. Three changes are needed:
 
 - Move a **minimal Operation Record** with an **admissibility outcome** ahead
   of the production modules.
-- Treat **Page Geometry as part of the structural substrate**, and make
-  Define Framebox its first new operator-facing operation.
+- Develop the **structural PDF substrate and the Page Geometry layer in the
+  same broad phase**, as adjacent owners with a strict contract (not one
+  combined domain). Make Define Framebox the first new operator-facing
+  operation on Page Geometry.
 - Require one **end-to-end vertical slice through the GUI** before porting
   modules broadly.
 
@@ -232,7 +250,8 @@ STRUCTURAL PDF SUBSTRATE
   read page facts          -> PageBoxes (raw + inherited + effective), /Rotate, UserUnit,
                               OC catalog, OutputIntent presence        (engine-neutral types)
   apply bounded mutations  -> box set/clear, rotate/normalize, place page as Form XObject,
-                              add technical objects in a named OC layer
+                              add technical objects with structurally separable
+                              identity/grouping (exact PDF representation not decided)
   preservation contract    -> what each mutation guarantees to keep (OC, ICC/OutputIntent,
                               transparency groups, annotations policy, metadata)
   write candidate          -> bytes + writer identity
@@ -253,7 +272,39 @@ Stage 7/8 carries transform → pikepdf write → PDFium render. The GUI and
 report still take geometry from `core.normalize_boxes` (`01 C-04`), which
 uses an older rule and a Corel-specific heuristic.
 
-**Recommended ownership split:**
+**Recommended ownership split.**
+
+```text
+STRUCTURAL PDF SUBSTRATE != PAGE GEOMETRY
+```
+
+They are adjacent layers with a strict contract, not one combined ownership
+domain:
+
+```text
+STRUCTURAL PDF SUBSTRATE OWNS          (factual PDF structure + safe structural mutation)
+    raw / inherited / effective PDF boxes
+    MediaBox origin
+    /Rotate
+    UserUnit
+    structural object preservation
+    structural mutation
+    write candidate
+    structural verification
+
+PAGE GEOMETRY OWNS                     (production interpretation of structural page facts)
+    layout_box selection
+    layout size
+    orientation semantics
+    absolute <-> layout-relative transforms
+    GUI-facing geometry
+    page-frame semantics
+    geometry warnings
+```
+
+Operations such as Define Framebox, Manual Trim and Page Geometry Transform
+use Page Geometry semantics and request bounded structural mutation through
+the structural PDF substrate.
 
 | Concern | Owner |
 |---|---|
@@ -272,13 +323,19 @@ priority and *transform* geometry, but it cannot record an **operator-assigned
 frame** as intent. That intent is distinct from the boxes the file happens
 to carry.
 
-- Architecturally it is a **Page Geometry operation**: it produces an
-  explicit, recorded frame assignment (per page or page set; source: operator,
-  derived, or heuristic). It optionally writes back TrimBox/BleedBox through
-  the structural substrate.
-- Once assigned, the frame overrides the priority rule for downstream
-  operations. The override and its reason must be visible in the operation
-  record.
+- `DEFINE_FRAMEBOX` = explicit operator production intent about the intended
+  page/frame geometry. Architecturally it is a **Page Geometry operation**.
+  It may result in structural box mutation, a recorded frame intent, or
+  another explicit canonical representation.
+  `FINAL_FRAME_MATERIALIZATION_POLICY = NOT_DECIDED`.
+- Define Framebox establishes explicit operator intent. How that intent is
+  materialized into canonical page geometry must be explicit and
+  structurally recorded.
+- **Define Framebox must not create a parallel hidden layout-box precedence
+  chain.** The accepted law (TrimBox → ArtBox → CropBox → MediaBox) remains.
+  The platform still exposes **one canonical `layout_box` result**:
+  downstream operations consume one canonical PageGeometry result and never
+  choose between an implicit operator frame and the standard hierarchy.
 - It is the **ideal first new operation** on the new stack: small, central,
   operator-interactive, and immediately useful to every module downstream
   (Step & Repeat `W_obj = layout.width` depends on it).
@@ -316,8 +373,8 @@ to carry.
 | Page Geometry / Size & Crop | KEEP AS PLATFORM CORE (CHANGE_OWNERSHIP to single geometry layer) | transform command model (`PageGeometryTransformCommand`, scopes, target canvas, scaling) | EN integrated route + pikepdf writer | NOW |
 | Step & Repeat | REIMPLEMENT AGAINST NEW CORE | seed planner policies (P1 placement invariants, gap/margin, orientation, source traceability), sheet-size catalog contract, cut-mark profile registry | seed planner (pure); **not** legacy `step_repeat/backend/engine.py` (uses TrimBox only, not layout box, and draws its own marks) | NEXT |
 | Vector AutoBleed | REIMPLEMENT FROM PRESERVED SEMANTICS (lab stays a lab meanwhile) | mirror-bleed construction, 0.75 pt inset, center-first order, sanitation that preserves transparency/ExtGState/DeviceCMYK, OCG preservation, raster fallback as explicit emergency | 169-test suite and fixtures **as oracle**; PyMuPDF content-stream rewriting not preserved as platform code (D-02) | NEXT — high value for imperfect customer PDFs |
-| Create Booklet | MERGE WITH Booklet Folding, then REIMPLEMENT | artifact roles, creep compensation, chunking, technical numbering (transfer fix), exception vision | booklet_pipeline_lab backend as reference only | LATER |
-| Booklet Folding / signature planning | KEEP AS SEPARATE LAB FOR NOW → merge semantics into one booklet/signature capability | 3-layer split (pagination / cell geometry / physical production), 16p formula, lap/creep rules, physical-qualification flags | engine as reference; PySide6 GUI not reused | LATER |
+| Create Booklet | CONVERGE with Booklet Folding on a shared booklet/signature semantic domain, then REIMPLEMENT (product surface relationship not yet decided) | artifact roles, creep compensation, chunking, technical numbering (transfer fix), exception vision | booklet_pipeline_lab backend as reference only | LATER |
+| Booklet Folding / signature planning | KEEP AS SEPARATE LAB FOR NOW → converge semantics into the shared booklet/signature domain | 3-layer split (pagination / cell geometry / physical production), 16p formula, lap/creep rules, physical-qualification flags | engine as reference; PySide6 GUI not reused | LATER |
 | N-up | DEFER; MERGE WITH placement core shared with Step & Repeat | "N-up with Background", sequence-into-cells | none yet | LATER |
 | Cut Stack | DEFER; on the same placement core, distinct ordering strategy | "postpress-driven, not generic N-up", reversed output | none yet | LATER |
 | Technical numbering / marks | MISSING common representation (§15) | all lab mark semantics | registries (cut mark, signature, font bundle) | NEXT |
@@ -504,8 +561,12 @@ Current state: four independent producers (`01 §16`, `C-20`).
   space, intent (finishing instruction vs information), placement constraint
   class (must be outside finished object / may intrude into bleed / free),
   rendering resources (from the existing font-bundle and signature registries),
-  and **output layer membership** (a named Optional Content group, so marks
-  are structurally separable, toggleable and identifiable in the PDF).
+  semantic identity, and **structural-layer membership / grouping metadata**.
+- Technical objects should support explicit, structurally separable
+  identity/grouping. OCG-based realization is a strong candidate because it
+  provides named, identifiable, toggleable PDF content, but the exact platform
+  representation remains subject to later technical-layer policy and
+  standards review. `EXACT_PDF_REPRESENTATION = NOT_DECIDED`.
 - **Operation-specific (policy):** *which* marks a module emits and *where*
   (booklet fold marks, step-and-repeat cut marks, cut-stack sequence marks).
 - **Admissibility:** the example in the brief (a mark that cannot sit fully
@@ -640,7 +701,7 @@ and regenerated, separate from the append-only ledger.
 | 17 | Manual Trim | KEEP_AND_COMPLETE (first vertical slice) | NOW |
 | 18 | Step & Repeat | REIMPLEMENT_FROM_PRESERVED_SEMANTICS | NEXT |
 | 19 | Vector AutoBleed | REIMPLEMENT_FROM_PRESERVED_SEMANTICS (lab continues) | NEXT |
-| 20 | Create Booklet + Booklet Folding | REMOVE_OR_MERGE (one booklet/signature capability) | LATER |
+| 20 | Create Booklet + Booklet Folding | CONVERGE (share one booklet/signature semantic domain; final module / operation / UI boundary not decided; `PRODUCT_SURFACE_RELATIONSHIP = NOT_YET_DECIDED`) | LATER |
 | 21 | N-up / Cut Stack | DEFER (shared placement core) | LATER |
 | 22 | Technical object representation | MISSING | NEXT |
 | 23 | Cut-mark / signature / font-bundle / sheet-size registries | KEEP | LATER |
@@ -660,9 +721,9 @@ and regenerated, separate from the append-only ledger.
 
 ```text
 KEEP family        = 14  (KEEP 4, KEEP_AND_COMPLETE 7, KEEP_BUT_SIMPLIFY 3)
-CHANGE family      = 8   (CHANGE_OWNERSHIP 2, CONVERGE 4, REIMPLEMENT_FROM_PRESERVED_SEMANTICS 2)
+CHANGE family      = 9   (CHANGE_OWNERSHIP 2, CONVERGE 5, REIMPLEMENT_FROM_PRESERVED_SEMANTICS 2)
 DEFER              = 5
-REMOVE_OR_MERGE    = 4
+REMOVE_OR_MERGE    = 3
 MISSING            = 5
 TOTAL              = 36
 ```
@@ -681,15 +742,16 @@ reimplementation.
 0. DECIDE the product line of record and the dev-infrastructure boundary   (decision, not code)
 
 A. File Management / artifact lifecycle            — largely done; complete ONE GUI action + Save As
-B. Structural PDF substrate
-     + Page Geometry ownership layer (moved up from C)
-     + Optional Content / rotation / preservation converged
+B. Structural PDF substrate (+ Optional Content / rotation / preservation converged)
+   and, in the same broad phase, the adjacent Page Geometry layer (moved up from C)
+   — two owners with a strict contract, not one domain
 E-min. Minimal Operation Record + admissibility outcome + operation kind registry  (moved up from E)
 C. Define Framebox — first new operation built on B + E-min
    + Manual Trim re-bound through GUI → operation → PFM  (vertical slice)
 T. Technical object representation (minimal)        (inserted before mark-emitting modules)
 D. Production operations, reimplemented on B + E-min + T:
-     Step & Repeat → Vector AutoBleed → Booklet (Create Booklet ∪ Booklet Folding) → N-up → Cut Stack
+     Step & Repeat → Vector AutoBleed → booklet/signature domain (Create Booklet + Booklet Folding
+     converged; surface relationship not decided) → N-up → Cut Stack
 I. Production intent model                           (inserted before Jobs)
 F. Jobs (ordered OperationRecords + intent)
 G. Agentic Layer (same operations, operator-authorized)
@@ -699,9 +761,11 @@ G. Agentic Layer (same operations, operator-authorized)
 
 - **0 first:** porting modules onto a substrate that exists in two divergent
   versions multiplies convergence cost (§5).
-- **Page Geometry into B:** geometry is a property of the structural layer
-  (boxes, rotation, origin). Define Framebox is an *operation* on it. Keeping
-  them apart preserves the legacy geometry path longer.
+- **Page Geometry alongside B:** Page Geometry interprets structural page
+  facts (boxes, rotation, origin) that the substrate owns, so the two layers
+  and their contract are best settled together. They remain separate owners
+  (§7). Define Framebox is an *operation* on Page Geometry. Deferring Page
+  Geometry to after the substrate preserves the legacy geometry path longer.
 - **E-min before C and D:** without it, each module invents its own
   request/manifest/verification shape. This is already visible with two
   modules (§11). A *minimal* record is cheap; retrofitting it to five modules
@@ -713,7 +777,7 @@ G. Agentic Layer (same operations, operator-authorized)
 - **Step & Repeat first in D:** simplest geometry, a mature planner, and an
   accepted catalog contract. **VAB second:** highest value for imperfect
   customer PDFs, with a proven test oracle. **Booklet** after the two
-  booklet lines' semantics are merged.
+  booklet lines converge on a shared semantic domain.
 - **I before F:** a Job without production intent is a script.
 
 ---
@@ -755,9 +819,11 @@ NEXT_ARCHITECTURAL_DECISION_3 =
 Declare the engine-neutral PageGeometry layer the only producer of
 layout-box and relative geometry for GUI, report and operations. Retire
 `core.normalize_boxes` as an authority, and move producer-specific heuristics
-into named repair diagnostics. Recognize Define Framebox (operator-assigned
-frame as recorded intent, optional structural write-back) as the first new
-operation built on the new stack, delivered with the Manual Trim re-binding
+into named repair diagnostics. Recognize Define Framebox (explicit operator
+frame intent, materialized into the one canonical PageGeometry result through
+an explicit, structurally recorded mechanism; final materialization policy not
+decided; no hidden parallel layout-box precedence) as the first new operation
+built on the new stack, delivered with the Manual Trim re-binding
 as the end-to-end vertical slice. *This aligns the product's most frequent
 operator decision with the architecture.*
 
