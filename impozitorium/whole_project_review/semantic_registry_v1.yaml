@@ -1,0 +1,2865 @@
+# Impozitorium Canonical Application Semantics Registry - Baseline V1
+# Data only. Deterministic ordering: entries sorted by canonical_id; mappings sorted by key.
+# ambiguous_terms: bare words that MUST be qualified; they never resolve to one entry.
+# Companion document: 05_CANONICAL_APPLICATION_SEMANTICS_BASELINE_V1.md
+registry_id: IMPOZITORIUM_CANONICAL_APPLICATION_SEMANTICS_REGISTRY
+registry_version: V1
+status: BASELINE_CANDIDATE_PENDING_HUMAN_REVIEW
+implementation_authorization: NONE
+status_values:
+- CANONICAL_V1
+- DEPRECATED
+- LEGACY
+- NEEDS_HUMAN_DECISION
+- NEEDS_STANDARD_REVIEW
+- PROVISIONAL
+namespaces:
+  ARCHITECTURE: Meta-vocabulary for talking about the system (module vs service vs algorithm ...).
+  ARTIFACT: Product artifact lifecycle concepts (owned by Platform File Management and the Working Document
+    model).
+  DEVINFRA: Development infrastructure (File Factory, Orchestrator Operator Workplace). Never product
+    runtime.
+  DIAGNOSTIC: Observation and diagnostic result semantics.
+  GEOMETRY: 'Platform geometry semantics derived from PDF facts: layout basis, spaces, frames, regions.'
+  GOVERNANCE: Project governance (Human authority, review, repository publication). Never product runtime.
+  MODULE: Operator-facing production modules (product surfaces). Module names never name platform layers.
+  OPERATION: Product-runtime operations, their records, requests, results and operation kinds.
+  PDF: Standard PDF structure and PDF-standard objects (ISO 32000 family).
+  PLATFORM: Platform-owned services/cores that modules use (not modules themselves).
+  POLICY: Policy objects and policy-controlled decisions.
+  PRODUCTION: Print-production domain concepts (intent, imposition, binding, admissibility).
+  TECHNICAL_OBJECT: Non-product marks and technical content placed for production/finishing.
+  UI: Human-facing interaction vocabulary (labels, actions). Labels are not machine identities.
+sources:
+  SRC.CIP4_JDF_XJDF: 'CIP4 JDF/XJDF: intent vs production distinction (CIP4 ''Introduction to JDF'');
+    XJDF intent resources such as LayoutIntent, ProductionIntent (ISO 21812-1:2019 preview); JDF Layout
+    with SignatureName/SheetName partitions, MarkObject and RegisterMark (CIP4 JDF Layout Creator to Imposition
+    ICS). Detailed element definitions NOT verified.'
+  SRC.DOMAIN_PRINT: Established print-production usage (e.g. creep and shingling in saddle-stitched booklets;
+    trim / crop marks; bleed). Industry explanatory sources, not standards.
+  SRC.HUMAN_TASK_05: 'Human/Coordinator task IMPOZITORIUM_CANONICAL_APPLICATION_SEMANTICS_BASELINE_V1_01
+    (product laws: layout_box priority, GUI layout [0,0,w,h], W_obj = layout.width, gap definition, Define
+    Framebox meaning)'
+  SRC.ICC: 'ICC.1 profile specification; PDF OutputIntent with embedded destination output profile (secondary:
+    Adobe Acrobat help on output intents, PDFlib PDF/X output intents). ICC.2 (iccMAX) not reviewed.'
+  SRC.ISO15930_PDFX: ISO 15930 (PDF/X family). Secondary sources state a PDF/X file defines MediaBox plus
+    TrimBox or ArtBox, BleedBox when bled, and an OutputIntent. Normative text NOT accessed.
+  SRC.ISO19593_1: 'ISO 19593-1:2018 ''Graphic technology - Use of PDF to associate processing steps and
+    content data - Part 1: Processing steps for packaging and labels'' (title verified via PDF Association
+    and ISO catalogue listings; processing steps carried as optional content groups with groups such as
+    Structural, Dimensions; normative text NOT accessed).'
+  SRC.ISO32000_OPTIONAL_CONTENT: ISO 32000 optional content (OCG / OCMD / OCProperties). Normative text
+    NOT accessed; identity confirmed via PDF Association material on ISO 19593-1.
+  SRC.ISO32000_PAGE_BOUNDARIES: ISO 32000 (PDF 1.7 / PDF 2.0) page boundaries. Clause 'Page boundaries'
+    (cited as 14.11.2 by third-party API references, e.g. setasign SetaPDF PageBoundaries, GemBox PdfPageBoundaryType).
+    Normative text NOT accessed in this pass.
+  SRC.ISO32000_XOBJECT: ISO 32000 form XObjects and their BBox key. Normative text NOT accessed.
+  SRC.REPO_AGENTS_MD: 'mirror: AGENTS.md (OW-line and EN-line identical)'
+  SRC.REPO_AGENT_BRIEFING: 'mirror: doc/agent_briefing.md (OW-line and EN-line identical)'
+  SRC.REPO_AGENT_HIERARCHY: 'mirror OW-line: doc/agent_orchestration/IMPOZITORIUM_AGENT_HIERARCHY_POLICY_ACCEPTED_DERIVED_01.md'
+  SRC.REPO_BOOKLET_LAB: 'mirror sandbox/booklet-folding-lab: sandbox/booklet_folding_lab/*'
+  SRC.REPO_BUTTON_LANGUAGE: 'mirror: doc/platform_button_action_language.md (Draft)'
+  SRC.REPO_COMMAND_API: 'mirror: doc/platform_command_api_manifesto.md (Draft)'
+  SRC.REPO_CORE_NORMALIZE_BOXES: 'mirror: preflight/core.py::normalize_boxes (legacy TrimBox -> BleedBox
+    -> MediaBox basis, GUI zeroing)'
+  SRC.REPO_CREATE_BOOKLET: 'mirror: doc/create_booklet_*.md; sandbox/booklet_pipeline_lab/; transfer/create-booklet-backend-2026-09-30'
+  SRC.REPO_DIAGNOSTICS: 'mirror: doc/platform_diagnostics_architecture.md; doc/pdf_compatibility_gate_policy.md'
+  SRC.REPO_ENGINE_DECISIONS: 'mirror EN-line: doc/engine_migration_decision_d01..d08_2026_07_29.md'
+  SRC.REPO_ENGINE_NEUTRAL_GEOMETRY: 'mirror EN-line: preflight/engine_neutral_geometry.py; doc/impositorium_engine_neutral_geometry_coordinate_space_diagnostic_boundary_contract.md'
+  SRC.REPO_FILE_FACTORY: 'mirror OW-line: operator_workplace/canonical_core/types.py; Blueprint 08'
+  SRC.REPO_FUTURE_PLACEMENT: 'mirror: doc/future_placement_modules_foundation.md (Draft)'
+  SRC.REPO_GENERATED_RESULT_PROFILES: 'mirror EN-line: preflight/generated_result_profiles.py'
+  SRC.REPO_MARK_REGISTRIES: 'mirror: preflight/cut_mark_profile_registry.py, signature_profile_registry.py,
+    technical_font_bundle_registry.py and their runtime contracts'
+  SRC.REPO_OPTIONAL_CONTENT: 'mirror OC-line: preflight/optional_content*.py; doc/pdf_optional_content_audits/*'
+  SRC.REPO_ORCHESTRATOR_OW: 'mirror OW-line: doc/agent_orchestration/IMPOZITORIUM_ORCHESTRATOR_OPERATOR_WORKPLACE_CONTRACT_01.md'
+  SRC.REPO_PAGE_GEOMETRY_CHARTER: 'mirror: doc/page_geometry_module_charter.md (Draft); doc/size_and_crop_module_intent.md'
+  SRC.REPO_PAGE_GEOMETRY_CODE: 'mirror: preflight/page_geometry.py (layout box choice TrimBox -> ArtBox
+    -> CropBox -> MediaBox)'
+  SRC.REPO_PFM: 'mirror EN-line: preflight/platform_file_management_*.py; OC-6B*/6C/6D* and successor
+    phase 1-6 records'
+  SRC.REPO_PG_TRANSFORM: 'mirror: preflight/page_geometry_transform.py (PageGeometryTransformCommand,
+    TargetCanvasSpec, SourceCropSpec)'
+  SRC.REPO_STEP_REPEAT: 'mirror: step_repeat/backend/engine.py; doc/step_and_repeat_math.md; sandbox/step_repeat_seed/'
+  SRC.REPO_VAB_LAB: 'mirror sandbox/vector-autobleed-lab: sandbox/vector_autobleed_lab/*'
+  SRC.REPO_WORKING_DOCUMENT: 'mirror: preflight/preview_result.py, working_document_candidate.py, working_document_acceptance.py;
+    doc/working_document_pipeline_policy.md'
+  SRC.REVIEW_02: 'sandbox: impozitorium/whole_project_review/02_SEMANTIC_AND_ARCHITECTURAL_ALIGNMENT_REVIEW.md'
+  SRC.REVIEW_04: 'sandbox: impozitorium/whole_project_review/04_PRODUCT_OPERATION_RECORD_AND_CANONICAL_SEMANTICS_REGISTRY.md
+    (HUMAN_ACCEPTED_DIRECTION)'
+ambiguous_terms:
+  D1 / D01 / D-01 / D2:
+  - GOVERNANCE.ENGINE_DECISION
+  - DEVINFRA.D01_KERNEL_MEDIATION
+  - GOVERNANCE.OC_WORKSTREAM
+  Job:
+  - PRODUCTION.JOB
+  - DEVINFRA.FILE_FACTORY_JOB
+  - TECHNICAL_OBJECT.TECHNICAL_JOB_SIGNATURE
+  OC:
+  - PDF.OPTIONAL_CONTENT
+  - GOVERNANCE.OC_WORKSTREAM
+  Operator Workplace:
+  - DEVINFRA.ORCHESTRATOR_OPERATOR_WORKPLACE
+  - UI.PRODUCT_WORKBENCH
+  Page Geometry:
+  - MODULE.PAGE_GEOMETRY
+  - PLATFORM.GEOMETRY_CORE
+  - GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
+  - OPERATION.KIND.PAGE_GEOMETRY_TRANSFORM
+  acceptance:
+  - GOVERNANCE.HUMAN_ACCEPTANCE
+  - ARTIFACT.ADMISSION
+  - PRODUCTION.OPERATOR_ACCEPTED_DEVIATION
+  action:
+  - UI.ACTION
+  - ARTIFACT.FILESYSTEM_ACTION
+  - OPERATION.OPERATION
+  admission:
+  - ARTIFACT.ADMISSION
+  - DEVINFRA.REVIEW_ADMISSION
+  bleed:
+  - PDF.BOX.BLEED
+  - GEOMETRY.BLEED_REGION
+  - PRODUCTION.BLEED_AMOUNT
+  bounding box:
+  - PDF.XOBJECT_BBOX
+  - GEOMETRY.CONTENT_BOUNDS
+  candidate:
+  - ARTIFACT.CANDIDATE
+  - GOVERNANCE.CANDIDATE_RECORD
+  canvas:
+  - GEOMETRY.TARGET_CANVAS
+  - GEOMETRY.SPACE.IMPOSED_SHEET
+  - GEOMETRY.SPACE.WIDGET_LOGICAL_PIXEL
+  command:
+  - OPERATION.REQUEST
+  - DEVINFRA.TRANSITION_COMMAND
+  commit:
+  - GOVERNANCE.REPOSITORY_COMMIT
+  - ARTIFACT.GENERATED_RESULT_COMMIT
+  crop:
+  - PDF.BOX.CROP
+  - OPERATION.KIND.PAGE_GEOMETRY_TRANSFORM
+  - TECHNICAL_OBJECT.TRIM_MARK
+  evidence:
+  - GOVERNANCE.EVIDENCE_PACKAGE
+  - DEVINFRA.EVIDENCE_KIND
+  - OPERATION.PROVENANCE
+  frame:
+  - GEOMETRY.OPERATOR_FRAME_INTENT
+  - GEOMETRY.LAYOUT_BOX
+  layout:
+  - GEOMETRY.LAYOUT_BOX
+  - GEOMETRY.LAYOUT_SPACE
+  - PRODUCTION.STEP_AND_REPEAT_LAYOUT
+  normalize:
+  - OPERATION.CLASS.NORMALIZE
+  - OPERATION.KIND.ROTATION_NORMALIZATION
+  - GEOMETRY.LEGACY_LAYOUT_ZEROING
+  - GEOMETRY.LAYOUT_SPACE
+  operation:
+  - OPERATION.OPERATION
+  - DEVINFRA.DURABLE_OPERATION
+  profile:
+  - PDF.ICC_PROFILE
+  - POLICY.POLICY_PROFILE
+  - OPERATION.GENERATED_RESULT_PROFILE
+  - TECHNICAL_OBJECT.CUT_MARK_PROFILE
+  promotion:
+  - ARTIFACT.PROMOTION
+  - GOVERNANCE.LAB_PROMOTION
+  publication:
+  - GOVERNANCE.REPOSITORY_PUBLICATION
+  - ARTIFACT.PROMOTION
+  - UI.SAVE_AS
+  receipt:
+  - ARTIFACT.VERIFICATION_RECEIPT
+  - DEVINFRA.REVIEW_CONTEXT_RECEIPT
+  review:
+  - GOVERNANCE.INDEPENDENT_REVIEW
+  - DEVINFRA.FILE_FACTORY_JOB
+  - OPERATION.VERIFICATION
+  rotation:
+  - PDF.PAGE_ROTATE
+  - GEOMETRY.PAGE_ORIENTATION
+  - OPERATION.KIND.ROTATION_NORMALIZATION
+  signature:
+  - PRODUCTION.SIGNATURE
+  - TECHNICAL_OBJECT.TECHNICAL_JOB_SIGNATURE
+  slug:
+  - TECHNICAL_OBJECT.SERVICE_TEXT
+  - TECHNICAL_OBJECT.TECHNICAL_NUMBERING
+  trim:
+  - PDF.BOX.TRIM
+  - MODULE.MANUAL_TRIM
+  - PRODUCTION.TRIMMING
+  - TECHNICAL_OBJECT.TRIM_MARK
+entries:
+- canonical_id: ARCHITECTURE.ALGORITHM
+  canonical_name: algorithm
+  semantic_class: PLATFORM_TERM
+  definition: A computation owned by a module or service (e.g. mirror-bleed construction, signature pagination)
+    with no lifecycle or artifact authority.
+  domain: ARCHITECTURE
+  source_basis:
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: ARCHITECTURE
+  status: CANONICAL_V1
+- canonical_id: ARCHITECTURE.DOMAIN_MODEL
+  canonical_name: domain model
+  semantic_class: PLATFORM_TERM
+  definition: Shared semantic model of a production domain usable by several modules (e.g. booklet/signature
+    domain).
+  domain: ARCHITECTURE
+  source_basis:
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: ARCHITECTURE
+  status: CANONICAL_V1
+- canonical_id: ARCHITECTURE.MODULE
+  canonical_name: module
+  semantic_class: PLATFORM_TERM
+  definition: 'An operator-facing production capability surface: controls + operations + preview/result
+    behavior, mounted in the shell. Owns only its domain-specific semantics.'
+  domain: ARCHITECTURE
+  source_basis:
+  - SRC.REPO_AGENTS_MD
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARCHITECTURE.PLATFORM_SERVICE
+  - OPERATION.OPERATION
+  relationships: []
+  owner: ARCHITECTURE
+  status: CANONICAL_V1
+- canonical_id: ARCHITECTURE.PLATFORM_SERVICE
+  canonical_name: platform service
+  semantic_class: PLATFORM_TERM
+  definition: A platform-owned capability with a stable contract used by many modules (e.g. structural
+    PDF core, render service, file management, geometry core). Not operator-facing by itself.
+  domain: ARCHITECTURE
+  source_basis:
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - platform capability
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARCHITECTURE.MODULE
+  relationships: []
+  owner: ARCHITECTURE
+  status: CANONICAL_V1
+- canonical_id: ARCHITECTURE.STRUCTURAL_CORE
+  canonical_name: structural core
+  semantic_class: PLATFORM_TERM
+  definition: Category name for platform services that own PDF structure; currently one member, PLATFORM.STRUCTURAL_PDF_CORE.
+  domain: ARCHITECTURE
+  source_basis:
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: ARCHITECTURE
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.ADMISSION
+  canonical_name: artifact admission
+  semantic_class: PLATFORM_TERM
+  definition: System decision that a verified candidate may become the current Working Document.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REVIEW_04
+  - SRC.REPO_WORKING_DOCUMENT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - working document acceptance
+  deprecated_aliases:
+  - acceptance (artifact)
+  not_equivalent_to:
+  - DEVINFRA.REVIEW_ADMISSION
+  - GOVERNANCE.HUMAN_ACCEPTANCE
+  - PRODUCTION.ADMISSIBILITY_OUTCOME
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.CANDIDATE
+  canonical_name: candidate
+  semantic_class: PLATFORM_TERM
+  definition: Generated artifact bytes awaiting verification and admission (Working Document candidate).
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  - SRC.REPO_WORKING_DOCUMENT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Working Document candidate
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.CANDIDATE_RECORD
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+  notes: Bare 'candidate' is ambiguous in governance text.
+- canonical_id: ARTIFACT.CURRENT_POINTER
+  canonical_name: current pointer
+  semantic_class: STATE
+  definition: Durable reference to the artifact that is the current Working Document.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.FILESYSTEM_ACTION
+  canonical_name: filesystem action
+  semantic_class: PLATFORM_TERM
+  definition: A filesystem-affecting action (e.g. load preview result, Save As, cleanup) used as the takeover
+    unit between legacy shell and PFM.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_ENGINE_DECISIONS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - OPERATION.OPERATION
+  - UI.ACTION
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.FINAL_OUTPUT
+  canonical_name: final output
+  semantic_class: PLATFORM_TERM
+  definition: Artifact written by the explicit operator Save As action as the approved production PDF.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Save As output
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.PREVIEW_RESULT
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.GENERATED_RESULT
+  canonical_name: generated result
+  semantic_class: PROVISIONAL_TERM
+  definition: Output bytes produced by a production operation (EN-line Generated Result Commit / profiles).
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  - SRC.REPO_GENERATED_RESULT_PROFILES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.FINAL_OUTPUT
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: NEEDS_HUMAN_DECISION
+  notes: Whether 'generated result' and 'candidate' are one concept or two lifecycle stages is not decided.
+- canonical_id: ARTIFACT.GENERATED_RESULT_COMMIT
+  canonical_name: generated result commit
+  semantic_class: PLATFORM_TERM
+  definition: Atomic persistence transaction recording an operation result and its receipt (Composite
+    Unit of Work).
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.REPOSITORY_COMMIT
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.MANAGED_STAGING
+  canonical_name: managed staging
+  semantic_class: PLATFORM_TERM
+  definition: Placement of candidate bytes into a platform-managed staging location prior to promotion.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.PREVIEW_RESULT
+  canonical_name: Preview Result
+  semantic_class: PLATFORM_TERM
+  definition: Temporary generated artifact used for inspection and continuation; not final output.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  - SRC.REPO_WORKING_DOCUMENT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - preview artifact
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.FINAL_OUTPUT
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+  notes: Relationship to ARTIFACT.CANDIDATE in the successor lifecycle NEEDS_HUMAN_DECISION.
+- canonical_id: ARTIFACT.PROMOTION
+  canonical_name: artifact promotion
+  semantic_class: PLATFORM_TERM
+  definition: Filesystem move of a verified staged artifact into its managed location.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.LAB_PROMOTION
+  - GOVERNANCE.REPOSITORY_PUBLICATION
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.SOURCE_PDF
+  canonical_name: Source PDF
+  semantic_class: PLATFORM_TERM
+  definition: The original file selected by the operator; sacred, never mutated in place.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  - SRC.HUMAN_TASK_05
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - source file
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.VERIFICATION_RECEIPT
+  canonical_name: verification receipt
+  semantic_class: PLATFORM_TERM
+  definition: Immutable record that candidate bytes were verified against a verification profile.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_PFM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - external verification receipt
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.REVIEW_CONTEXT_RECEIPT
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: ARTIFACT.WORKING_DOCUMENT
+  canonical_name: Working Document
+  semantic_class: PLATFORM_TERM
+  definition: The current document state inside the platform; the source or an admitted result of an earlier
+    operation.
+  domain: ARTIFACT
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  - SRC.REPO_WORKING_DOCUMENT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.FILE_MANAGEMENT
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.AUTHORITY_UNIT
+  canonical_name: authority unit
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: One-shot bounded authorization consumed by File Factory execution.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.CONTROLLER
+  canonical_name: File Factory Controller
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Owner of WorkUnit/Job canonical state, authority and evidence lineage in File Factory.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Controller
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.D01_KERNEL_MEDIATION
+  canonical_name: D01 kernel mediation
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Windows minifilter source (Operator Workplace Stage 5 D01); removed from File Factory v0
+    critical path.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - D01
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.ENGINE_DECISION
+  relationships: []
+  owner: DEVINFRA
+  status: LEGACY
+- canonical_id: DEVINFRA.DURABLE_OPERATION
+  canonical_name: File Factory durable operation
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Idempotent request record in the File Factory durable store (durable_operations).
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - OPERATION.OPERATION
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.EVIDENCE_KIND
+  canonical_name: File Factory evidence kind
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: File Factory EvidenceKind (RESULT, ARTIFACT, EXECUTION, IDENTITY, CONFLICT, RECONCILIATION).
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.FILE_FACTORY
+  canonical_name: File Factory
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Internal engineering subsystem for building and maintaining Impozitorium; not a product
+    runtime.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PLATFORM.FILE_MANAGEMENT
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.FILE_FACTORY_JOB
+  canonical_name: File Factory job
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: File Factory JobKind IMPLEMENTATION / REVIEW / CORRECTION / RECONCILIATION.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - JobKind
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.JOB
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.INCIDENT
+  canonical_name: File Factory incident
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Recorded condition (e.g. UNKNOWN_SIDE_EFFECT) stopping execution pending reconciliation.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.KANDEV_CHASSIS
+  canonical_name: Kandev execution chassis
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Replaceable external execution chassis used by File Factory L7B.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - Kandev
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.ORCHESTRATOR_OPERATOR_WORKPLACE
+  canonical_name: Orchestrator Operator Workplace
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Human-facing operating workplace of the agent/code factory (development infrastructure).
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_ORCHESTRATOR_OW
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - operator_workplace (package)
+  deprecated_aliases: []
+  not_equivalent_to:
+  - UI.PRODUCT_WORKBENCH
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.REVIEW_ADMISSION
+  canonical_name: review admission
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: File Factory admission of a REVIEW job with review-context evidence.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.ADMISSION
+  - PRODUCTION.ADMISSIBILITY_OUTCOME
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.REVIEW_CONTEXT_RECEIPT
+  canonical_name: review-context admission receipt
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Durable File Factory receipt committed before review admission.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.VERIFICATION_RECEIPT
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.TRANSITION_COMMAND
+  canonical_name: File Factory transition command
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: Canonical-core command such as ProposeWorkUnitCommand.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - OPERATION.REQUEST
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DEVINFRA.WORKUNIT
+  canonical_name: WorkUnit
+  semantic_class: DEVELOPMENT_INFRASTRUCTURE_TERM
+  definition: File Factory unit of engineering work with revisions and close disposition.
+  domain: DEVINFRA
+  source_basis:
+  - SRC.REPO_FILE_FACTORY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - OPERATION.OPERATION_RECORD
+  relationships: []
+  owner: DEVINFRA
+  status: CANONICAL_V1
+- canonical_id: DIAGNOSTIC.CODE
+  canonical_name: diagnostic code
+  semantic_class: DIAGNOSTIC_TERM
+  definition: Stable machine-readable identifier of an observed condition (e.g. ARTBOX_FALLBACK_USED).
+  domain: DIAGNOSTIC
+  source_basis:
+  - SRC.REPO_COMMAND_API
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DIAGNOSTIC
+  status: CANONICAL_V1
+- canonical_id: DIAGNOSTIC.KNOWN_BAD
+  canonical_name: known bad
+  semantic_class: DIAGNOSTIC_TERM
+  definition: Condition the system understands and can describe; may proceed with explicit risk acceptance.
+  domain: DIAGNOSTIC
+  source_basis:
+  - SRC.REPO_COMMAND_API
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DIAGNOSTIC.UNKNOWN_BAD
+  relationships: []
+  owner: DIAGNOSTIC
+  status: PROVISIONAL
+- canonical_id: DIAGNOSTIC.SEVERITY
+  canonical_name: diagnostic severity
+  semantic_class: DIAGNOSTIC_TERM
+  definition: 'Severity of a diagnostic: INFO, WARNING, BLOCKER, ERROR (ERROR = diagnostic failure, not
+    product risk).'
+  domain: DIAGNOSTIC
+  source_basis:
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.ADMISSIBILITY_OUTCOME
+  relationships: []
+  owner: DIAGNOSTIC
+  status: PROVISIONAL
+- canonical_id: DIAGNOSTIC.UNKNOWN_BAD
+  canonical_name: unknown bad
+  semantic_class: DIAGNOSTIC_TERM
+  definition: Condition the system cannot safely understand; must be blocked.
+  domain: DIAGNOSTIC
+  source_basis:
+  - SRC.REPO_COMMAND_API
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: DIAGNOSTIC
+  status: PROVISIONAL
+- canonical_id: GEOMETRY.BLEED_REGION
+  canonical_name: bleed region
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Area surrounding the finished frame into which printed content extends to tolerate cutting
+    variation.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - bleed area
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.BLEED
+  - PRODUCTION.BLEED_AMOUNT
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.CLIP_REGION
+  canonical_name: clip region
+  semantic_class: PLATFORM_TERM
+  definition: Operation-specific clipping geometry used by an algorithm when placing or reusing content
+    (e.g. clip = layout box in Step & Repeat, mirror-region clips in Vector AutoBleed). Not a PDF page
+    box and not a product frame.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_STEP_REPEAT
+  - SRC.REPO_VAB_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - clip
+  - clipping region
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_BOX
+  - GEOMETRY.OPERATOR_FRAME_INTENT
+  - PDF.BOX.CROP
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.CONTENT_BOUNDS
+  canonical_name: content bounds
+  semantic_class: PLATFORM_TERM
+  definition: Computed extent of actually painted page content (analysis result).
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - content extent
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.ART
+  - PDF.XOBJECT_BBOX
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: PROVISIONAL
+  notes: No repository implementation found.
+- canonical_id: GEOMETRY.GAP
+  canonical_name: gap
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Distance between neighboring layout boxes of placed objects.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REPO_STEP_REPEAT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - hgap
+  - vgap
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.MARGIN
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.LAYOUT_BOX
+  canonical_name: layout box
+  semantic_class: PLATFORM_TERM
+  definition: The single page rectangle selected by POLICY.LAYOUT_BOX_PRIORITY (TrimBox -> ArtBox -> CropBox
+    -> MediaBox) as the basis for layout-relative geometry. Exactly one canonical layout box per page
+    is exposed to downstream consumers.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REPO_AGENT_BRIEFING
+  - SRC.REPO_PAGE_GEOMETRY_CODE
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - layout basis
+  - layout_box
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.OPERATOR_FRAME_INTENT
+  - PDF.BOX.TRIM
+  - PRODUCTION.STEP_AND_REPEAT_LAYOUT
+  relationships:
+  - type: selected_by
+    target: POLICY.LAYOUT_BOX_PRIORITY
+  - type: defines_origin_of
+    target: GEOMETRY.LAYOUT_SPACE
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: 'Platform term derived from standard PDF boxes. Legacy core.normalize_boxes uses an older basis
+    (TrimBox -> BleedBox -> MediaBox): legacy drift, not a competing policy.'
+- canonical_id: GEOMETRY.LAYOUT_SPACE
+  canonical_name: layout space
+  semantic_class: PLATFORM_TERM
+  definition: 'Coordinate space whose origin is the layout box: the GUI-facing layout box is [0, 0, width,
+    height] and all other boxes are expressed relative to it (unrotated top-left, x-right / y-down per
+    the engine-neutral contract).'
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - GUI-relative geometry
+  - PAGE_LAYOUT_SPACE
+  deprecated_aliases:
+  - Normalize-to-Zero
+  not_equivalent_to:
+  - GEOMETRY.SPACE.PAGE_MEDIA
+  - PDF.MEDIABOX_ORIGIN
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.LEGACY_LAYOUT_ZEROING
+  canonical_name: legacy layout zeroing
+  semantic_class: LEGACY_TERM
+  definition: 'Behavior of core.normalize_boxes: express boxes relative to a TrimBox -> BleedBox -> MediaBox
+    basis with a Corel-specific CropBox shift.'
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_CORE_NORMALIZE_BOXES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - normalize_boxes
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_SPACE
+  - OPERATION.KIND.ROTATION_NORMALIZATION
+  relationships: []
+  owner: MODULE.PREFLIGHT
+  status: LEGACY
+  notes: Transitional implementation drift from POLICY.LAYOUT_BOX_PRIORITY.
+- canonical_id: GEOMETRY.OPERATOR_FRAME_INTENT
+  canonical_name: operator frame intent (Framebox)
+  semantic_class: PLATFORM_TERM
+  definition: Explicit operator production intent establishing the intended page/frame geometry when incoming
+    PDF geometry is absent, unsuitable, ambiguous or operationally wrong for the printed object. It must
+    be materialized into the one canonical page geometry result through an explicit, structurally recorded
+    mechanism; it never forms a parallel hidden precedence chain beside the layout box priority.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REVIEW_02
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Framebox
+  - frame intent
+  deprecated_aliases:
+  - FrameBox
+  not_equivalent_to:
+  - GEOMETRY.CLIP_REGION
+  - GEOMETRY.LAYOUT_BOX
+  - PDF.BOX.TRIM
+  relationships:
+  - type: established_by
+    target: OPERATION.KIND.DEFINE_FRAMEBOX
+  - type: materialization_policy
+    target: POLICY.FRAME_MATERIALIZATION
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: Concept canonical; product label 'Framebox' provisional; spelling 'FrameBox' deprecated because
+    it imitates PDF page-box key naming and could be mistaken for a standard box.
+- canonical_id: GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
+  canonical_name: page geometry descriptor
+  semantic_class: PLATFORM_TERM
+  definition: The immutable engine-neutral value describing one page's boxes (with provenance), rotation,
+    layout box and derived transforms. The canonical PageGeometry result consumed downstream.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  - SRC.REPO_PAGE_GEOMETRY_CODE
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - PageGeometry (value object)
+  deprecated_aliases: []
+  not_equivalent_to:
+  - MODULE.PAGE_GEOMETRY
+  - PLATFORM.GEOMETRY_CORE
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: PROVISIONAL
+  notes: Code class name PageGeometry remains; canonical_name chosen to avoid collision with MODULE.PAGE_GEOMETRY.
+    Name requires Human acceptance.
+- canonical_id: GEOMETRY.PAGE_ORIENTATION
+  canonical_name: page orientation
+  semantic_class: PLATFORM_TERM
+  definition: Portrait/landscape interpretation of the layout box as presented after effective rotation.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - orientation
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.PAGE_ROTATE
+  - PRODUCTION.SHEET_ORIENTATION
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: PROVISIONAL
+- canonical_id: GEOMETRY.PLACEMENT_OBJECT_EXTENT
+  canonical_name: placement object extent
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: 'Size of an object placed by imposition: W_obj = layout box width, H_obj = layout box height
+    (before bleed/margins).'
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - W_obj / H_obj
+  - object geometry
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.TRIM
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: Legacy step_repeat engine uses TrimBox only (drift).
+- canonical_id: GEOMETRY.PRODUCTION_CONTOUR
+  canonical_name: production contour
+  semantic_class: PLATFORM_TERM
+  definition: 'Future contour-capable product geometry: arbitrary (non-rectangular) outline of the finished
+    object used by cutting/finishing.'
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_FUTURE_PLACEMENT
+  - SRC.ISO19593_1
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - contour geometry
+  - die line
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_BOX
+  - TECHNICAL_OBJECT.FINISHING_CONTOUR
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: PROVISIONAL
+  notes: The geometry of the finished object; TECHNICAL_OBJECT.FINISHING_CONTOUR is the marked line drawn
+    for a device.
+- canonical_id: GEOMETRY.SPACE.DEVICE_PIXEL
+  canonical_name: device pixel space
+  semantic_class: PLATFORM_TERM
+  definition: Physical device pixel space (after device pixel ratio).
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - DEVICE_PIXEL_SPACE
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.SPACE.IMPOSED_SHEET
+  canonical_name: imposed sheet space
+  semantic_class: PLATFORM_TERM
+  definition: Coordinate space of an imposed (press) sheet on which objects and technical objects are
+    placed.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - IMPOSED_SHEET_SPACE
+  - sheet geometry
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.TARGET_CANVAS
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.SPACE.PAGE_MEDIA
+  canonical_name: page media space
+  semantic_class: PLATFORM_TERM
+  definition: Canonical MediaBox-relative page space used by core transforms.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - PAGE_MEDIA_SPACE
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.SPACE.PDF_NATIVE_PAGE
+  canonical_name: PDF native page space
+  semantic_class: PLATFORM_TERM
+  definition: Raw PDF default user space of a page (bottom-left origin, as stored).
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  aliases:
+  - PDF_NATIVE_PAGE_SPACE
+  - absolute PDF geometry
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.SPACE.RENDER_PIXEL
+  canonical_name: render pixel space
+  semantic_class: PLATFORM_TERM
+  definition: Raster pixel space of a rendered page. Never PDF write geometry.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  - SRC.REPO_AGENT_BRIEFING
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - RENDER_PIXEL_SPACE
+  - preview pixels
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.SPACE.WIDGET_LOGICAL_PIXEL
+  canonical_name: widget logical pixel space
+  semantic_class: PLATFORM_TERM
+  definition: Qt logical pixel space of a GUI widget.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - WIDGET_LOGICAL_PIXEL_SPACE
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: GEOMETRY.TARGET_CANVAS
+  canonical_name: target canvas
+  semantic_class: PROVISIONAL_TERM
+  definition: Module-local term of the Page Geometry module for the target page size of a transform.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.REPO_PG_TRANSFORM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - TargetCanvasSpec
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.SPACE.IMPOSED_SHEET
+  relationships: []
+  owner: MODULE.PAGE_GEOMETRY
+  status: LEGACY
+  notes: '''canvas'' also names GUI preview canvases; qualify always.'
+- canonical_id: GOVERNANCE.CANDIDATE_RECORD
+  canonical_name: governance candidate
+  semantic_class: GOVERNANCE_TERM
+  definition: A document or change proposed for review/acceptance (e.g. 'HUMAN_ACCEPTED_LOCAL_CANDIDATE',
+    blueprint candidate).
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.CANDIDATE
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: GOVERNANCE.ENGINE_DECISION
+  canonical_name: engine migration decision D-0n
+  semantic_class: GOVERNANCE_TERM
+  definition: Accepted Course D decisions D-01 ... D-08.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_ENGINE_DECISIONS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - D-01
+  - D-02
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.D01_KERNEL_MEDIATION
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+  notes: 'Collides with D01 (kernel), D1/D2 (OC-6D steps), Gate D D1-D6. Always prefix: DECISION.D-0n,
+    OC-6D1, PDFIUM_GATE_D.D2.'
+- canonical_id: GOVERNANCE.EVIDENCE_PACKAGE
+  canonical_name: evidence package
+  semantic_class: GOVERNANCE_TERM
+  definition: Recorded execution/verification evidence supporting a review or acceptance.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.EVIDENCE_KIND
+  - OPERATION.PROVENANCE
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: GOVERNANCE.HUMANGATE
+  canonical_name: HumanGate
+  semantic_class: GOVERNANCE_TERM
+  definition: Human-only decision point; non-delegable.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DIAGNOSTIC.CODE
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+  notes: '''Gate'' alone is overloaded (PDFium Gate A-D, Compatibility Gate, Rotation Compatibility Gate).'
+- canonical_id: GOVERNANCE.HUMAN_ACCEPTANCE
+  canonical_name: Human acceptance
+  semantic_class: GOVERNANCE_TERM
+  definition: Explicit recorded decision by the Human Owner accepting a deliverable or policy.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.ADMISSION
+  - PRODUCTION.OPERATOR_ACCEPTED_DEVIATION
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: GOVERNANCE.INDEPENDENT_REVIEW
+  canonical_name: independent review
+  semantic_class: GOVERNANCE_TERM
+  definition: Review by a party that did not implement the reviewed change, under fixed criteria.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.FILE_FACTORY_JOB
+  - OPERATION.VERIFICATION
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: GOVERNANCE.LAB_PROMOTION
+  canonical_name: lab promotion
+  semantic_class: GOVERNANCE_TERM
+  definition: Authorized adoption of lab semantics into the platform (by reimplementation).
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.PROMOTION
+  relationships: []
+  owner: GOVERNANCE
+  status: PROVISIONAL
+- canonical_id: GOVERNANCE.OC_WORKSTREAM
+  canonical_name: Optional Content workstream labels (OC-n)
+  semantic_class: LEGACY_TERM
+  definition: Project milestone labels OC-1 ... OC-6D2. OC-1..OC-5 are Optional Content work; OC-6B*..OC-6D2
+    also carry File Management lifecycle prerequisites.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_OPTIONAL_CONTENT
+  - SRC.REPO_PFM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.OPTIONAL_CONTENT
+  relationships: []
+  owner: GOVERNANCE
+  status: LEGACY
+- canonical_id: GOVERNANCE.REPOSITORY_COMMIT
+  canonical_name: repository commit
+  semantic_class: GOVERNANCE_TERM
+  definition: A Git commit.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - Git commit
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.GENERATED_RESULT_COMMIT
+  - DEVINFRA.REVIEW_CONTEXT_RECEIPT
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: GOVERNANCE.REPOSITORY_PUBLICATION
+  canonical_name: repository publication
+  semantic_class: GOVERNANCE_TERM
+  definition: Separately authorized integration/canonicalization of accepted content in a selected repository
+    and branch (local or remote).
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - GIT.PUBLICATION
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.PROMOTION
+  - UI.SAVE_AS
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: GOVERNANCE.STAGE_SEPARATION
+  canonical_name: six-stage separation
+  semantic_class: GOVERNANCE_TERM
+  definition: planning -> implementation -> execution -> review -> acceptance -> publication; no stage
+    authorizes the next.
+  domain: GOVERNANCE
+  source_basis:
+  - SRC.REPO_AGENT_HIERARCHY
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: GOVERNANCE
+  status: CANONICAL_V1
+- canonical_id: MODULE.BOOKLET_FOLDING_LAB
+  canonical_name: Booklet Folding Lab
+  semantic_class: MODULE_NAME
+  definition: Standalone laboratory for booklet / signature folding imposition.
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Book Signature Imposer
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: CANONICAL_V1
+  notes: Lab identity; not a platform module.
+- canonical_id: MODULE.CREATE_BOOKLET
+  canonical_name: Create Booklet
+  semantic_class: MODULE_NAME
+  definition: Booklet creation capability (sandbox + documentation).
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_CREATE_BOOKLET
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: PROVISIONAL
+  notes: Product surface relationship with Booklet Folding NOT_YET_DECIDED.
+- canonical_id: MODULE.CUT_STACK
+  canonical_name: Cut Stack
+  semantic_class: MODULE_NAME
+  definition: Future postpress-driven imposition module (cut-and-stack ordering).
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_FUTURE_PLACEMENT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - Cut & Stack
+  - Cut Stack Imposition
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: PROVISIONAL
+- canonical_id: MODULE.MANUAL_TRIM
+  canonical_name: Manual Trim
+  semantic_class: MODULE_NAME
+  definition: Operator-facing repair module for trim and bleed boxes.
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.TRIM
+  - PRODUCTION.TRIMMING
+  relationships: []
+  owner: MODULE
+  status: CANONICAL_V1
+- canonical_id: MODULE.N_UP
+  canonical_name: N-up with Background
+  semantic_class: MODULE_NAME
+  definition: Future placement module placing a sequence of pages into cells, optionally with background.
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_FUTURE_PLACEMENT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - N-up
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.N_UP_IMPOSITION
+  relationships: []
+  owner: MODULE
+  status: PROVISIONAL
+- canonical_id: MODULE.PAGE_GEOMETRY
+  canonical_name: Page Geometry (module)
+  semantic_class: MODULE_NAME
+  definition: 'The existing production transform module for page size / crop / scaling / output boxes
+    (charter: doc/page_geometry_module_charter.md). A module, never the platform geometry layer.'
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_PAGE_GEOMETRY_CHARTER
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Page Geometry module
+  - Page Size module
+  deprecated_aliases:
+  - Page Geometry engine
+  not_equivalent_to:
+  - GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
+  - PLATFORM.GEOMETRY_CORE
+  relationships:
+  - type: operator_label_relation
+    target: MODULE.SIZE_AND_CROP
+  owner: MODULE
+  status: CANONICAL_V1
+- canonical_id: MODULE.PREFLIGHT
+  canonical_name: Preflight
+  semantic_class: MODULE_NAME
+  definition: Diagnostic module/shell function observing and reporting PDF facts.
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: CANONICAL_V1
+- canonical_id: MODULE.SIZE_AND_CROP
+  canonical_name: Size & Crop
+  semantic_class: MODULE_NAME
+  definition: Operator-facing production module described as 'over the Page Geometry engine' (finished
+    size, bleed, crop, scaling, scope).
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_PAGE_GEOMETRY_CHARTER
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: NEEDS_HUMAN_DECISION
+  notes: 'Decide: UI label of MODULE.PAGE_GEOMETRY, or a separate module over it.'
+- canonical_id: MODULE.STEP_AND_REPEAT
+  canonical_name: Step & Repeat
+  semantic_class: MODULE_NAME
+  definition: Module placing repeated objects on a sheet.
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_STEP_REPEAT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - Step Repeat
+  - snr
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: CANONICAL_V1
+- canonical_id: MODULE.VECTOR_AUTOBLEED
+  canonical_name: Vector AutoBleed
+  semantic_class: MODULE_NAME
+  definition: Standalone laboratory (and future capability) for mirror-bleed generation and sanitation.
+  domain: MODULE
+  source_basis:
+  - SRC.REPO_VAB_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - VAB
+  - Vector Auto-Bleed
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE
+  status: CANONICAL_V1
+- canonical_id: OPERATION.CLASS.NORMALIZE
+  canonical_name: normalize operation class
+  semantic_class: PROVISIONAL_TERM
+  definition: Converts a valid but non-canonical PDF form into the platform's canonical form (e.g. baking
+    /Rotate).
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: OPERATION
+  status: PROVISIONAL
+- canonical_id: OPERATION.CLASS.REPAIR
+  canonical_name: repair operation class
+  semantic_class: PROVISIONAL_TERM
+  definition: Restores an intended production condition of imperfect input without changing the intended
+    product.
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: OPERATION
+  status: PROVISIONAL
+- canonical_id: OPERATION.CLASS.SANITIZE
+  canonical_name: sanitize operation class
+  semantic_class: PROVISIONAL_TERM
+  definition: Removes or neutralizes problematic PDF structure while preserving appearance.
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: OPERATION
+  status: PROVISIONAL
+- canonical_id: OPERATION.CLASS.TRANSFORM
+  canonical_name: transform operation class
+  semantic_class: PROVISIONAL_TERM
+  definition: Intentionally changes product geometry or arrangement.
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: OPERATION
+  status: PROVISIONAL
+- canonical_id: OPERATION.GENERATED_RESULT_PROFILE
+  canonical_name: generated result profile
+  semantic_class: PLATFORM_TERM
+  definition: Per-operation-kind declaration of writer identity, verification profile and manifest representation
+    (EN-line registry).
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_GENERATED_RESULT_PROFILES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.ICC_PROFILE
+  - POLICY.POLICY_PROFILE
+  relationships: []
+  owner: OPERATION
+  status: PROVISIONAL
+  notes: Expected to fold into the operation kind registry.
+- canonical_id: OPERATION.KIND.DEFINE_FRAMEBOX
+  canonical_name: Define Framebox operation
+  semantic_class: OPERATION_KIND
+  definition: Operation establishing GEOMETRY.OPERATOR_FRAME_INTENT for pages.
+  domain: OPERATION
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Define Framebox
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: PROVISIONAL
+  notes: Whether it is also a separate module surface is NOT_DECIDED.
+- canonical_id: OPERATION.KIND.MANUAL_TRIM
+  canonical_name: Manual Trim operation
+  semantic_class: OPERATION_KIND
+  definition: Operation correcting trim/bleed page boxes per Manual Trim rules (box-only).
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_GENERATED_RESULT_PROFILES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - MANUAL_TRIM
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.TRIM
+  relationships: []
+  owner: MODULE.MANUAL_TRIM
+  status: CANONICAL_V1
+- canonical_id: OPERATION.KIND.MIRROR_BLEED
+  canonical_name: mirror bleed generation
+  semantic_class: OPERATION_KIND
+  definition: Operation generating bleed by mirrored reuse of edge content (Vector AutoBleed semantics).
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_VAB_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - auto bleed
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: MODULE.VECTOR_AUTOBLEED
+  status: PROVISIONAL
+- canonical_id: OPERATION.KIND.PAGE_GEOMETRY_TRANSFORM
+  canonical_name: page geometry transform
+  semantic_class: OPERATION_KIND
+  definition: Operation transforming a source visual area into a target page geometry (size, crop-or-pad,
+    scaling, output boxes).
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_PG_TRANSFORM
+  - SRC.REPO_GENERATED_RESULT_PROFILES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - PAGE_GEOMETRY (generated result profile id)
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PLATFORM.GEOMETRY_CORE
+  relationships: []
+  owner: MODULE.PAGE_GEOMETRY
+  status: CANONICAL_V1
+- canonical_id: OPERATION.KIND.ROTATION_NORMALIZATION
+  canonical_name: rotation normalization
+  semantic_class: OPERATION_KIND
+  definition: Structural operation making rotated pages canonical (resolving /Rotate into content/boxes).
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_DIAGNOSTICS
+  - SRC.REPO_VAB_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LEGACY_LAYOUT_ZEROING
+  - PDF.PAGE_ROTATE
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: OPERATION.OPERATION
+  canonical_name: operation
+  semantic_class: PLATFORM_TERM
+  definition: A bounded production transformation or analysis applied to explicit input artifacts, producing
+    outputs and an Operation Record.
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.DURABLE_OPERATION
+  - PRODUCTION.JOB
+  - UI.ACTION
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+- canonical_id: OPERATION.OPERATION_KIND
+  canonical_name: operation kind
+  semantic_class: PLATFORM_TERM
+  definition: Registered identity + version of a type of operation.
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_04
+  - SRC.REPO_GENERATED_RESULT_PROFILES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+- canonical_id: OPERATION.OPERATION_RECORD
+  canonical_name: Operation Record
+  semantic_class: PLATFORM_TERM
+  definition: 'Minimal product-runtime execution fact: identity, kind/version, input/output artifact refs,
+    parameters, policy profile, execution identity, diagnostics, admissibility outcome, verification,
+    provenance.'
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.WORKUNIT
+  - PLATFORM.FILE_MANAGEMENT
+  - PRODUCTION.JOB
+  - UI.ACTION
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+- canonical_id: OPERATION.PROVENANCE
+  canonical_name: operation provenance
+  semantic_class: PLATFORM_TERM
+  definition: Timestamps, implementation and environment identity of an operation execution.
+  domain: OPERATION
+  source_basis:
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.EVIDENCE_PACKAGE
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+- canonical_id: OPERATION.REQUEST
+  canonical_name: operation request
+  semantic_class: PLATFORM_TERM
+  definition: Typed input payload invoking an operation.
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_COMMAND_API
+  - SRC.REPO_PG_TRANSFORM
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.TRANSITION_COMMAND
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+  notes: Module classes named *Command keep their names; canonical concept is operation request.
+- canonical_id: OPERATION.RESULT
+  canonical_name: operation result
+  semantic_class: PLATFORM_TERM
+  definition: Typed outcome of an operation (outputs, diagnostics, status).
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_COMMAND_API
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+- canonical_id: OPERATION.VERIFICATION
+  canonical_name: verification
+  semantic_class: PLATFORM_TERM
+  definition: Check of produced bytes/structure against a verification profile after an operation.
+  domain: OPERATION
+  source_basis:
+  - SRC.REPO_PFM
+  - SRC.REPO_OPTIONAL_CONTENT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - postflight
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.INDEPENDENT_REVIEW
+  relationships: []
+  owner: OPERATION
+  status: CANONICAL_V1
+- canonical_id: PDF.BOX.ART
+  canonical_name: ArtBox
+  semantic_class: STANDARD_TERM
+  definition: Standard PDF page boundary defining the extent of the page's meaningful content as intended
+    by the creator.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  - SRC.ISO15930_PDFX
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - ArtBox
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.CONTENT_BOUNDS
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.BOX.BLEED
+  canonical_name: BleedBox
+  semantic_class: STANDARD_TERM
+  definition: Standard PDF page boundary defining the region to which contents are clipped in a production
+    environment, including extra bleed area for cutting/folding tolerances.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - BleedBox
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.BLEED_REGION
+  - PRODUCTION.BLEED_AMOUNT
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.BOX.CROP
+  canonical_name: CropBox
+  semantic_class: STANDARD_TERM
+  definition: Standard PDF page boundary defining the region to which page contents are clipped when displayed
+    or printed. Not a finishing (cutting) boundary.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - CropBox
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.CLIP_REGION
+  - OPERATION.KIND.PAGE_GEOMETRY_TRANSFORM
+  - TECHNICAL_OBJECT.TRIM_MARK
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: '''crop'' in Size & Crop and ''crop mark'' do not refer to CropBox.'
+- canonical_id: PDF.BOX.EFFECTIVE_VALUE
+  canonical_name: effective page box value
+  semantic_class: PLATFORM_TERM
+  definition: The value of a page box after applying PDF inheritance and defaulting rules, distinguished
+    from its raw presence in the file (raw / inherited / effective).
+  domain: PDF
+  source_basis:
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  aliases:
+  - box provenance
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: NEEDS_STANDARD_REVIEW
+  notes: Exact default/inheritance rules must be verified against ISO 32000-2; library defaults (PyMuPDF,
+    pikepdf) are not the standard.
+- canonical_id: PDF.BOX.MEDIA
+  canonical_name: MediaBox
+  semantic_class: STANDARD_TERM
+  definition: Standard PDF page boundary defining the boundaries of the physical medium on which the page
+    is to be displayed or printed.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - MediaBox
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_BOX
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: Normative wording to be confirmed against ISO 32000-2 text.
+- canonical_id: PDF.BOX.TRIM
+  canonical_name: TrimBox
+  semantic_class: STANDARD_TERM
+  definition: Standard PDF page boundary defining the intended dimensions of the finished page after trimming.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  - SRC.ISO15930_PDFX
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - TrimBox
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_BOX
+  - GEOMETRY.OPERATOR_FRAME_INTENT
+  - MODULE.MANUAL_TRIM
+  relationships:
+  - type: first_priority_input_of
+    target: POLICY.LAYOUT_BOX_PRIORITY
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.FORM_XOBJECT
+  canonical_name: form XObject
+  semantic_class: STANDARD_TERM
+  definition: Self-contained reusable PDF content stream object placed via the Do operator.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_XOBJECT
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - Form XObject
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.ICC_PROFILE
+  canonical_name: ICC profile
+  semantic_class: STANDARD_TERM
+  definition: Color profile conforming to the ICC specification (ICC.1); iccMAX (ICC.2) not reviewed.
+  domain: PDF
+  source_basis:
+  - SRC.ICC
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - OPERATION.GENERATED_RESULT_PROFILE
+  - POLICY.POLICY_PROFILE
+  - TECHNICAL_OBJECT.CUT_MARK_PROFILE
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: Bare 'profile' is ambiguous; always qualify.
+- canonical_id: PDF.MEDIABOX_ORIGIN
+  canonical_name: MediaBox origin
+  semantic_class: PLATFORM_TERM
+  definition: The lower-left corner of the MediaBox in PDF default user space; may be non-zero or negative.
+  domain: PDF
+  source_basis:
+  - SRC.REPO_ENGINE_DECISIONS
+  - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
+  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_SPACE
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.OPTIONAL_CONTENT
+  canonical_name: optional content
+  semantic_class: STANDARD_TERM
+  definition: PDF mechanism for content whose visibility is controlled by optional content groups (OCG)
+    and membership dictionaries (OCMD).
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_OPTIONAL_CONTENT
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - Optional Content
+  - PDF layers
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.OC_WORKSTREAM
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: '''OC'' is reserved as an abbreviation only inside explicit namespaces; see GOVERNANCE.OC_WORKSTREAM.'
+- canonical_id: PDF.OPTIONAL_CONTENT_GROUP
+  canonical_name: optional content group
+  semantic_class: STANDARD_TERM
+  definition: A named, toggleable group of optional content.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_OPTIONAL_CONTENT
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - OCG
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.OPTIONAL_CONTENT_MEMBERSHIP
+  canonical_name: optional content membership dictionary
+  semantic_class: STANDARD_TERM
+  definition: Dictionary expressing visibility of content as a function of several OCGs.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_OPTIONAL_CONTENT
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - OCMD
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.OUTPUT_INTENT
+  canonical_name: OutputIntent
+  semantic_class: STANDARD_TERM
+  definition: PDF catalog entry describing the intended output condition, typically with an embedded destination
+    ICC output profile.
+  domain: PDF
+  source_basis:
+  - SRC.ICC
+  - SRC.ISO15930_PDFX
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - OutputIntents
+  - output intent
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PDF.PAGE
+  canonical_name: PDF page
+  semantic_class: STANDARD_TERM
+  definition: A page object of a PDF document.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: STANDARD_ALIGNED
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.FINISHED_PAGE
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: A PDF page is not a finished page (JDF distinguishes reader pages and finished pages).
+- canonical_id: PDF.PAGE_ROTATE
+  canonical_name: page /Rotate
+  semantic_class: STANDARD_TERM
+  definition: The page dictionary rotation value (multiple of 90 degrees) applied when the page is displayed
+    or printed.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - /Rotate
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.PAGE_ORIENTATION
+  - OPERATION.KIND.ROTATION_NORMALIZATION
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: Bare 'rotation' is ambiguous (page /Rotate vs item rotation in imposition vs orientation).
+- canonical_id: PDF.PDFX_CONFORMANCE
+  canonical_name: PDF/X conformance
+  semantic_class: STANDARD_TERM
+  definition: Conformance of a PDF file to a part of ISO 15930 (PDF/X).
+  domain: PDF
+  source_basis:
+  - SRC.ISO15930_PDFX
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - PDF/X
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: NEEDS_STANDARD_REVIEW
+- canonical_id: PDF.PROCESSING_STEPS
+  canonical_name: processing steps
+  semantic_class: STANDARD_TERM
+  definition: ISO 19593-1 convention for associating non-printing production/finishing data (e.g. cutting,
+    folding, dimensions) with PDF content via optional content groups and metadata.
+  domain: PDF
+  source_basis:
+  - SRC.ISO19593_1
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - ISO 19593 processing steps
+  deprecated_aliases: []
+  not_equivalent_to:
+  - TECHNICAL_OBJECT.TECHNICAL_OBJECT
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: NEEDS_STANDARD_REVIEW
+  notes: Candidate realization for technical objects; platform representation NOT_DECIDED.
+- canonical_id: PDF.USER_UNIT
+  canonical_name: UserUnit
+  semantic_class: STANDARD_TERM
+  definition: Page-level scale factor for default user space units.
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - UserUnit
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+  notes: Engine-neutral contract defines an unresolved-UserUnit fail-closed law.
+- canonical_id: PDF.XOBJECT_BBOX
+  canonical_name: form XObject BBox
+  semantic_class: STANDARD_TERM
+  definition: 'The BBox key of a form XObject: its bounding box in form space.'
+  domain: PDF
+  source_basis:
+  - SRC.ISO32000_XOBJECT
+  standard_alignment: STANDARD_ALIGNED
+  aliases:
+  - BBox
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.CONTENT_BOUNDS
+  relationships: []
+  owner: PLATFORM.STRUCTURAL_PDF_CORE
+  status: CANONICAL_V1
+- canonical_id: PLATFORM.FILE_MANAGEMENT
+  canonical_name: Platform File Management
+  semantic_class: PLATFORM_TERM
+  definition: Platform service owning artifact identity, storage, candidate lifecycle, verification receipts,
+    managed staging, promotion, current pointer and filesystem safety.
+  domain: PLATFORM
+  source_basis:
+  - SRC.REPO_PFM
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - PFM
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.FILE_FACTORY
+  - OPERATION.OPERATION_RECORD
+  relationships: []
+  owner: PLATFORM
+  status: CANONICAL_V1
+- canonical_id: PLATFORM.GEOMETRY_CORE
+  canonical_name: platform geometry core
+  semantic_class: PLATFORM_TERM
+  definition: 'The platform-owned geometry interpretation layer: layout box selection, layout size, orientation
+    semantics, absolute <-> layout-relative transforms, GUI-facing geometry, page-frame semantics, geometry
+    warnings. Distinct from the module named Page Geometry.'
+  domain: PLATFORM
+  source_basis:
+  - SRC.REVIEW_02
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
+  - MODULE.PAGE_GEOMETRY
+  - PLATFORM.STRUCTURAL_PDF_CORE
+  relationships: []
+  owner: PLATFORM
+  status: NEEDS_HUMAN_DECISION
+  notes: 'Concept identity fixed by this id; display name is PROVISIONAL. Candidate names: ''Geometry
+    Core'', ''Page Frame Model'', ''Geometry Interpretation Layer''. Must never be called ''Page Geometry''.'
+- canonical_id: PLATFORM.RENDER_SERVICE
+  canonical_name: render service
+  semantic_class: PLATFORM_TERM
+  definition: Platform-owned rendering/preview boundary (PDFium target), one primary renderer per capability.
+  domain: PLATFORM
+  source_basis:
+  - SRC.REPO_ENGINE_DECISIONS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - render boundary
+  - renderer provider
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM
+  status: PROVISIONAL
+- canonical_id: PLATFORM.SEMANTICS_REGISTRY
+  canonical_name: canonical semantics registry
+  semantic_class: GOVERNANCE_TERM
+  definition: The authoritative registry of canonical product semantic identities.
+  domain: PLATFORM
+  source_basis:
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM
+  status: CANONICAL_V1
+- canonical_id: PLATFORM.STRUCTURAL_PDF_CORE
+  canonical_name: structural PDF core
+  semantic_class: PLATFORM_TERM
+  definition: 'Platform-owned factual PDF structure and safe bounded structural mutation: raw/inherited/effective
+    boxes, MediaBox origin, /Rotate, UserUnit, preservation, mutation, candidate write, structural verification
+    (pikepdf/qpdf target).'
+  domain: PLATFORM
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REPO_ENGINE_DECISIONS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - structural PDF substrate
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PLATFORM.GEOMETRY_CORE
+  relationships: []
+  owner: PLATFORM
+  status: PROVISIONAL
+- canonical_id: POLICY.FRAME_MATERIALIZATION
+  canonical_name: frame materialization policy
+  semantic_class: POLICY_TERM
+  definition: Policy deciding how operator frame intent becomes canonical page geometry (e.g. structural
+    box mutation, recorded intent, or another explicit representation).
+  domain: POLICY
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PLATFORM.GEOMETRY_CORE
+  status: NEEDS_HUMAN_DECISION
+  notes: FINAL_FRAME_MATERIALIZATION_POLICY = NOT_DECIDED.
+- canonical_id: POLICY.LAYOUT_BOX_PRIORITY
+  canonical_name: layout box priority
+  semantic_class: POLICY_TERM
+  definition: 'Accepted product law selecting the layout box: TrimBox, else ArtBox, else CropBox, else
+    MediaBox.'
+  domain: POLICY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REPO_AGENT_BRIEFING
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - layout box selection policy
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships:
+  - type: selects
+    target: GEOMETRY.LAYOUT_BOX
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+- canonical_id: POLICY.MODULE_COMPATIBILITY_CLASS
+  canonical_name: module compatibility classification
+  semantic_class: POLICY_TERM
+  definition: 'Per-module classification of a diagnostic condition: supported, supported_with_warning,
+    requires_normalization, blocked_for_this_module, future_support.'
+  domain: POLICY
+  source_basis:
+  - SRC.REPO_DIAGNOSTICS
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: POLICY
+  status: PROVISIONAL
+- canonical_id: POLICY.POLICY_PROFILE
+  canonical_name: policy profile
+  semantic_class: POLICY_TERM
+  definition: Named set of production tolerances/thresholds referenced by an operation (e.g. bleed threshold).
+  domain: POLICY
+  source_basis:
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - OPERATION.GENERATED_RESULT_PROFILE
+  - PDF.ICC_PROFILE
+  relationships: []
+  owner: POLICY
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.ADMISSIBILITY_OUTCOME
+  canonical_name: admissibility outcome
+  semantic_class: STATE
+  definition: 'Production judgment on an operation result: semantic classes PASS, PASS_WITH_WARNING, OPERATOR_ACCEPTED_DEVIATION,
+    REPAIRED_AND_ACCEPTED, BLOCKED, UNKNOWN (enum names not final).'
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REVIEW_04
+  - SRC.REPO_COMMAND_API
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - admissibility
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.ADMISSION
+  - GOVERNANCE.HUMAN_ACCEPTANCE
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: Concept canonical; value names PROVISIONAL. UNKNOWN != BLOCKED != PASS.
+- canonical_id: PRODUCTION.BLEED_AMOUNT
+  canonical_name: bleed amount
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Required/actual distance by which content extends beyond the finished frame (e.g. 2.0 mm
+    threshold, 3.0 mm default in VAB).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.REPO_AGENTS_MD
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.BLEED
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.CREEP
+  canonical_name: creep
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Outward displacement of inner pages of a saddle-stitched/folded product caused by paper
+    thickness.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.CREEP_COMPENSATION
+  canonical_name: creep compensation
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Prepress shift/scale of page content to counter creep.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.REPO_CREATE_BOOKLET
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - shingling
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.FINISHED_PAGE
+  canonical_name: finished page
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: A page of the finished product (may differ from a PDF page or reader page).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: NEEDS_STANDARD_REVIEW
+- canonical_id: PRODUCTION.FINISHED_SIZE
+  canonical_name: finished size
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Intended dimensions of the finished product after trimming.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.ISO32000_PAGE_BOUNDARIES
+  - SRC.REPO_PAGE_GEOMETRY_CHARTER
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.BOX.MEDIA
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.FOLDING_SCHEME
+  canonical_name: folding scheme
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Specific fold pattern determining page order and orientation on a sheet.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - FoldScheme
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: PROVISIONAL
+  notes: Relation to CIP4 fold catalog not verified.
+- canonical_id: PRODUCTION.IMPOSITION
+  canonical_name: imposition
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Arrangement of pages/objects and marks on press sheets.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_JDF_XJDF
+  - SRC.DOMAIN_PRINT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.JOB
+  canonical_name: production job
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: 'Product-runtime concept: production intent plus ordered/related Operation Records over
+    explicit artifacts. Design later.'
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REVIEW_04
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.FILE_FACTORY_JOB
+  - OPERATION.OPERATION_RECORD
+  relationships: []
+  owner: PRODUCTION
+  status: PROVISIONAL
+  notes: Bare 'Job' is deprecated in both product and devinfra text.
+- canonical_id: PRODUCTION.LAP
+  canonical_name: lap shift
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Deliberate offset of a folded sheet edge (overfold) used in the Booklet Folding Lab.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - Lap Shift
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: PROVISIONAL
+  notes: Relation to industry terms 'lip' / 'overfold' not verified.
+- canonical_id: PRODUCTION.MARGIN
+  canonical_name: margin
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Distance between sheet edge and the placed area (Step & Repeat edge/margins).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_STEP_REPEAT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - edge
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.GAP
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.N_UP_IMPOSITION
+  canonical_name: N-up imposition
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Imposition placing several reader pages on one sheet side.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_JDF_XJDF
+  - SRC.DOMAIN_PRINT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - MODULE.N_UP
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.OPERATOR_ACCEPTED_DEVIATION
+  canonical_name: operator-accepted deviation
+  semantic_class: STATE
+  definition: Known, described production compromise explicitly accepted by the operator and recorded
+    as product evidence.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REVIEW_04
+  - SRC.REPO_COMMAND_API
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - known bad accepted
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GOVERNANCE.HUMAN_ACCEPTANCE
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.PHYSICAL_QUALIFICATION_REQUIRED
+  canonical_name: physical qualification required
+  semantic_class: STATE
+  definition: Flag that a production rule is mathematically consistent but not yet proven on a physical
+    specimen.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: PROVISIONAL
+- canonical_id: PRODUCTION.PRODUCTION_INTENT
+  canonical_name: production intent
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Device-independent description of the product to be made (finished size, binding, media,
+    quantity, finishing).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_JDF_XJDF
+  - SRC.REVIEW_02
+  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  aliases:
+  - product specification
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: NEEDS_STANDARD_REVIEW
+  notes: Aligns conceptually with JDF/XJDF Intent; field mapping NOT verified.
+- canonical_id: PRODUCTION.SALVAGE_MODE
+  canonical_name: salvage mode
+  semantic_class: POLICY_TERM
+  definition: Mode permitting knowingly imperfect but deterministic output with logged operator responsibility.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_COMMAND_API
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Emergency / Salvage mode
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: PRODUCTION
+  status: PROVISIONAL
+- canonical_id: PRODUCTION.SHEET_ORIENTATION
+  canonical_name: sheet orientation
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Orientation of the press sheet (horizontal / vertical / auto) in the sheet-size catalog.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_MARK_REGISTRIES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.PAGE_ORIENTATION
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: PRODUCTION.SIGNATURE
+  canonical_name: signature (folded section)
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: A printed sheet folded into a section of a bound product (e.g. 16-page signature).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.CIP4_JDF_XJDF
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - folded signature
+  deprecated_aliases: []
+  not_equivalent_to:
+  - TECHNICAL_OBJECT.TECHNICAL_JOB_SIGNATURE
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: JDF uses Signature in Layout partitioning; exact JDF semantics not verified.
+- canonical_id: PRODUCTION.STEP_AND_REPEAT_LAYOUT
+  canonical_name: step-and-repeat layout parameters
+  semantic_class: LEGACY_TERM
+  definition: The legacy Step & Repeat 'layout' parameter dictionary (sheet size, edge, gaps, bleed, cutmarks).
+  domain: PRODUCTION
+  source_basis:
+  - SRC.REPO_STEP_REPEAT
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.LAYOUT_BOX
+  - GEOMETRY.LAYOUT_SPACE
+  relationships: []
+  owner: MODULE.STEP_AND_REPEAT
+  status: LEGACY
+  notes: '''layout'' alone is ambiguous (layout box, Qt layout, JDF Layout).'
+- canonical_id: PRODUCTION.TRIMMING
+  canonical_name: trimming
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Physical cutting of printed material to finished size.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - MODULE.MANUAL_TRIM
+  relationships: []
+  owner: PRODUCTION
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.CHUNK_BOUNDARY_MARK
+  canonical_name: chunk-boundary corner mark
+  semantic_class: PLATFORM_TERM
+  definition: Corner mark at a booklet chunk / block boundary (registry family chunk_boundary_corner_marks).
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_MARK_REGISTRIES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.COLLATING_MARK
+  canonical_name: collating mark
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Spine mark stepped per signature to verify gathering order (collating staircase).
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - collating staircase
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.CONTOUR_REGISTRATION_MARK
+  canonical_name: contour-cutter registration mark
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Mark read by plotters/cutters to register contour cutting.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - cutter mark
+  - plotter mark
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: PROVISIONAL
+- canonical_id: TECHNICAL_OBJECT.CUT_MARK
+  canonical_name: cut mark
+  semantic_class: PLATFORM_TERM
+  definition: Umbrella class of marks guiding cutting, covering product trim marks and chunk-boundary
+    corner marks (cut-mark profile registry families).
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_MARK_REGISTRIES
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
+  aliases:
+  - cutmark
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+  notes: JDF names a CutMark; mapping not verified.
+- canonical_id: TECHNICAL_OBJECT.CUT_MARK_PROFILE
+  canonical_name: cut-mark profile
+  semantic_class: POLICY_TERM
+  definition: Registered profile describing cut-mark geometry/style (cut_mark_profile_registry).
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_MARK_REGISTRIES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.ICC_PROFILE
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.FINISHING_CONTOUR
+  canonical_name: finishing contour line
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Drawn line describing a finishing path (cut, crease, perforation) for a device or for proofing.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.ISO19593_1
+  - SRC.REPO_FUTURE_PLACEMENT
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - finishing contour
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.PRODUCTION_CONTOUR
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: NEEDS_STANDARD_REVIEW
+- canonical_id: TECHNICAL_OBJECT.FOLD_CROSSHAIR
+  canonical_name: folding crosshair
+  semantic_class: PLATFORM_TERM
+  definition: Booklet Folding Lab mark at the fold intersection.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: PROVISIONAL
+- canonical_id: TECHNICAL_OBJECT.FOLD_MARK
+  canonical_name: fold mark
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Mark indicating a fold line.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.CIP4_JDF_XJDF
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases: []
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.REGISTRATION_MARK
+  canonical_name: registration mark
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Mark used to align separations or sides.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - RegisterMark
+  - register mark
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.SERVICE_TEXT
+  canonical_name: service text
+  semantic_class: PLATFORM_TERM
+  definition: Informational text placed outside the product (job info, sheet info).
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - slug text
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: PROVISIONAL
+  notes: '''slug'' (slug area) is vendor/application usage; lab uses ''page-number slugs'' differently.'
+- canonical_id: TECHNICAL_OBJECT.TECHNICAL_JOB_SIGNATURE
+  canonical_name: technical job signature
+  semantic_class: PLATFORM_TERM
+  definition: Technical identification label of a job placed on an imposed sheet (SignatureProfileRegistry).
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_MARK_REGISTRIES
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - job signature
+  - signature label
+  - technical signature
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.SIGNATURE
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+- canonical_id: TECHNICAL_OBJECT.TECHNICAL_NUMBERING
+  canonical_name: technical page numbering
+  semantic_class: PLATFORM_TERM
+  definition: Numbers identifying source pages/sheets placed outside the product for bindery/operator
+    identification.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REPO_CREATE_BOOKLET
+  - SRC.REPO_BOOKLET_LAB
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - external page numbering
+  deprecated_aliases: []
+  not_equivalent_to: []
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: PROVISIONAL
+- canonical_id: TECHNICAL_OBJECT.TECHNICAL_OBJECT
+  canonical_name: technical object
+  semantic_class: PLATFORM_TERM
+  definition: Non-product content placed for production/finishing (marks, service text, labels, contours)
+    with kind, geometry, intent, placement constraints, rendering resources, semantic identity and structural
+    grouping metadata.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.REVIEW_02
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - technical mark
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PDF.PROCESSING_STEPS
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: CANONICAL_V1
+  notes: TECHNICAL_OBJECT_EXACT_PDF_REPRESENTATION = NOT_DECIDED (OCG / ISO 19593 strong candidates).
+- canonical_id: TECHNICAL_OBJECT.TRIM_MARK
+  canonical_name: trim mark
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: Mark at product corners indicating the finished trim line.
+  domain: TECHNICAL_OBJECT
+  source_basis:
+  - SRC.DOMAIN_PRINT
+  - SRC.REPO_MARK_REGISTRIES
+  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  aliases:
+  - product trim mark
+  deprecated_aliases:
+  - crop mark
+  not_equivalent_to:
+  - PDF.BOX.CROP
+  relationships: []
+  owner: TECHNICAL_OBJECT
+  status: PROVISIONAL
+  notes: Canonical choice between 'trim mark' and 'crop mark' NEEDS Human confirmation; 'crop' collides
+    with CropBox.
+- canonical_id: UI.ACTION
+  canonical_name: operator action
+  semantic_class: PLATFORM_TERM
+  definition: A human-facing interaction (button/menu) that may request an operation; labels follow the
+    platform button action language.
+  domain: UI
+  source_basis:
+  - SRC.REPO_BUTTON_LANGUAGE
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - button action
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.FILESYSTEM_ACTION
+  - OPERATION.OPERATION
+  relationships: []
+  owner: UI
+  status: CANONICAL_V1
+- canonical_id: UI.PRODUCT_WORKBENCH
+  canonical_name: production workbench
+  semantic_class: PLATFORM_TERM
+  definition: The operator-facing prepress application shell (Preflight Shell) for the printing technologist.
+  domain: UI
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REPO_AGENTS_MD
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - Preflight Shell
+  - product GUI
+  deprecated_aliases: []
+  not_equivalent_to:
+  - DEVINFRA.ORCHESTRATOR_OPERATOR_WORKPLACE
+  relationships: []
+  owner: UI
+  status: PROVISIONAL
+  notes: The term 'Operator Workplace' is reserved for the devinfra concept until renamed; product name
+    pending.
+- canonical_id: UI.SAVE_AS
+  canonical_name: Save As
+  semantic_class: PLATFORM_TERM
+  definition: Explicit operator action writing the approved production PDF as ARTIFACT.FINAL_OUTPUT.
+  domain: UI
+  source_basis:
+  - SRC.REPO_AGENT_BRIEFING
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - OUTPUT.SAVE_AS
+  deprecated_aliases: []
+  not_equivalent_to:
+  - ARTIFACT.PROMOTION
+  - GOVERNANCE.REPOSITORY_PUBLICATION
+  relationships: []
+  owner: UI
+  status: CANONICAL_V1
