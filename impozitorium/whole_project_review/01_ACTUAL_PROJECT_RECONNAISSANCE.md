@@ -48,6 +48,25 @@ Branch short names used throughout:
 
 ---
 
+## Revision note — Bounded Correction 01
+
+```text
+CORRECTION_SCOPE =
+    operator-runtime epistemic wording            (§21 item 3)
+    geometry-path classification                  (§5, §6, C-04)
+    freshest H2B Vector AutoBleed evidence        (§15.2)
+    remote-publication evidence classification    (§3.4, C-23 removed, M-02)
+    mirror-basis proof                            (§1.2, M-05 removed)
+
+ARCHITECTURAL_RECOMMENDATIONS_ADDED =
+    NONE
+
+PROJECT_REDESIGN =
+    NONE
+```
+
+---
+
 ## 1. Review basis and mirror identity
 
 ### 1.1 Access preflight
@@ -76,11 +95,43 @@ TOTAL_REACHABLE_COMMITS = 1607
 DEFAULT_BRANCH (origin/HEAD) = main
 ```
 
-`MIRROR_BASIS_MATCH` at the level of **names and counts** is `PASS`.
-Equality of each SHA with the canonical remote is `NOT_PROVEN` by this
-review: the canonical repository was deliberately not accessed, and the
-mirror manifest (SHA-256 `6ca37592…7140`) is not present inside the mirror,
-so it was not re-verified here.
+Mirror basis is established by two separate evidence sources:
+
+```text
+INDEPENDENT_REVIEWER_DIRECT_CANONICAL_VERIFICATION =
+    NOT_PERFORMED
+    (canonical repository deliberately not accessed)
+
+REVIEWER_OBSERVATION_OF_MIRROR =
+    19 heads + 1 tag; names match the expected list exactly
+
+COORDINATOR_PROVIDED_MIRROR_BUILD_EVIDENCE =
+    SOURCE_HEAD_COUNT = 19
+    TARGET_HEAD_COUNT = 19
+    SOURCE_TAG_COUNT = 1
+    TARGET_TAG_COUNT = 1
+    SOURCE_REMOTE_STABLE_DURING_ACQUISITION = YES
+    UNAUTHORIZED_REF_COUNT = 0
+    HEAD_REF_ACCOUNTING = EXACT
+    TAG_REF_ACCOUNTING = EXACT
+    SOURCE_TO_TARGET_SHA_MISMATCH = NONE
+    SOURCE_SNAPSHOT_SHA256 =
+        cb8fcbed1758207ae7874176f0452a6bb793576ee0e106f41ca9fa6aca94e1e8
+    TARGET_SNAPSHOT_SHA256 =
+        cb8fcbed1758207ae7874176f0452a6bb793576ee0e106f41ca9fa6aca94e1e8
+    MIRROR_MANIFEST_SHA256 =
+        6ca37592127a1da4663ba459684353904960dbab8e874307c52d845167da7140
+
+MIRROR_BUILD_EVIDENCE =
+    EXACT SOURCE/TARGET REF ACCOUNTING PROVEN
+
+MIRROR_BASIS =
+    PROVEN_BY_PRE_REVIEW_BUILD_EVIDENCE
+```
+
+The build evidence was supplied by the Human/Coordinator as part of the
+review basis; the manifest file itself is not inside the mirror and the
+canonical repository was not accessed to reconfirm it.
 
 ### 1.3 Method
 
@@ -206,10 +257,13 @@ crop marks belong to imposition/export modules.
 
 - Both indexes combine a routing table with an append-only historical ledger
   (`INFERENCE`; also stated by the 2026-07-17 audit, `HIST`).
-- Acceptance records frequently state "does not authorize remote
-  publication" (Agent Hierarchy derived publication acceptance, H1 harvest
-  acceptance), yet these branches exist on the remote that the mirror copies.
-  No remote-publication authorization record was found (see §20, M-02).
+- Repository evidence gap (not an architectural finding): some acceptance
+  records state that remote publication was not authorized at that
+  acceptance-publication stage (Agent Hierarchy derived publication
+  acceptance, H1 harvest acceptance), and the corresponding branches exist on
+  the remote copied by the mirror. The later Human authorization that
+  permitted the remote push is not materialized in this repository snapshot.
+  No governance violation is inferred (see §20, M-02).
 
 ---
 
@@ -259,7 +313,7 @@ Domains derived from code and records (not from the task's candidate list).
 | Domain / question | Primary owner (observed) | Secondary / transitional | Status | Evidence |
 |---|---|---|---|---|
 | Geometry semantics (value model) | EN `preflight/engine_neutral_geometry.py` (schema `engine-neutral-geometry-v1`, pure Python, no backend) | OW has a different version of the same file; `preflight/page_geometry.py` (PyMuPDF-based PageGeometry with layout priority) | `REAL_BUT_TRANSITIONAL`; **AMBIGUOUS across lines** | `CODE`; EN index row "Engine-Neutral Geometry Core Implementation" |
-| GUI-facing box semantics | `preflight/core.py::normalize_boxes` (TrimBox→BleedBox→MediaBox basis, Corel shift heuristic) | `page_geometry.py` (TrimBox→ArtBox→CropBox→MediaBox) | `REAL_AND_IMPLEMENTED`, **AMBIGUOUS** (two selection rules) | `CODE` EN `preflight/core.py:176-225`, `preflight/page_geometry.py:60-70` |
+| GUI-facing box semantics | `preflight/core.py::normalize_boxes` (TrimBox→BleedBox→MediaBox basis, Corel shift heuristic) | `page_geometry.py` (TrimBox→ArtBox→CropBox→MediaBox) | `REAL_BUT_TRANSITIONAL` — `page_geometry.py` carries the accepted/intended policy; legacy `core.normalize_boxes` path not yet displaced (legacy implementation drift, C-04) | `CODE` EN `preflight/core.py:176-225`, `preflight/page_geometry.py:60-70` |
 | Rendering | PyMuPDF in GUI (`preflight_gui/window.py` `get_pixmap`) | PDFium: OW opt-in `--preview-engine pdfium_d2`; EN backend-only provider `preflight/renderer.py` → `renderer_pdfium.py` | `REAL_BUT_TRANSITIONAL` | `CODE`; D-01 `CONTRACT` |
 | PDF structural mutation | PyMuPDF (legacy Manual Trim export, Step & Repeat, GUI Save As) | pikepdf/qpdf (EN `manual_trim_output_writer.py`, `page_geometry_output_writer.py`, PFM verifier/promotion) | `REAL_BUT_TRANSITIONAL` | `CODE`; D-02 `CONTRACT` |
 | File identity / artifact lifecycle (product) | Platform File Management (`preflight/platform_file_management_*`) | legacy shell (`preflight_gui/window.py` working document / preview result / save-as / cleanup) holds temporary authority | `TRANSITIONAL_DUAL_OWNERSHIP` (declared) | D-04, D-05 `CONTRACT`; `CODE` |
@@ -275,9 +329,11 @@ Domains derived from code and records (not from the task's candidate list).
 | Technical marks later | not decided | Booklet lab boundary: "Any platform-wide technical-layer model … requires a separate platform review" | `DESIGN_INTENT` | `CONTRACT` (lab boundary) |
 | Governance / HumanGate | Human Owner (Agent Hierarchy Policy) | File Factory encodes `HumanDecision` enum | `ACCEPTED_CONTRACT` + partial code in File Factory | `CONTRACT`, `CODE` |
 
-`OWNERSHIP_AMBIGUITIES = 5` (rows marked AMBIGUOUS: geometry value model
-across lines, layout-box selection, GUI shell variants, technical marks
-today, plus the product/File-Factory "Job" ownership split in §13).
+`OWNERSHIP_AMBIGUITIES = 4` (rows marked AMBIGUOUS: geometry value model
+across lines, GUI shell variants, technical marks today, plus the
+product/File-Factory "Job" ownership split in §13). Layout-box selection is
+classified as transitional legacy drift, not as an ownership ambiguity
+(Bounded Correction 01).
 
 ---
 
@@ -285,7 +341,7 @@ today, plus the product/File-Factory "Job" ownership split in §13).
 
 | Topic | Accepted platform law | Current implementation | Migration target | Lab |
 |---|---|---|---|---|
-| Layout-box selection | `TrimBox -> ArtBox -> CropBox -> MediaBox` ("future policy" in `agent_briefing.md`; engine-neutral contract "preserves the existing layout priority") | `page_geometry.py` implements it; **`core.normalize_boxes` (report/GUI) uses TrimBox → BleedBox → MediaBox** and a Corel-specific CropBox shift | engine-neutral `PageGeometry` with explicit box provenance | VAB copies the platform box documents unchanged |
+| Layout-box selection | `TrimBox -> ArtBox -> CropBox -> MediaBox` ("future policy" in `agent_briefing.md`; engine-neutral contract "preserves the existing layout priority") | newer `page_geometry.py` implements it; the legacy **`core.normalize_boxes` (report/GUI) path still uses TrimBox → BleedBox → MediaBox** and a Corel-specific CropBox shift (legacy implementation drift; not displaced yet) | engine-neutral `PageGeometry` with explicit box provenance | VAB copies the platform box documents unchanged |
 | Absolute vs relative | contract separates backend-absolute and GUI-relative geometry (`page_geometry_contract.md`, Draft) | `core.normalize_boxes` returns GUI-relative rects (TrimBox origin = 0) and does not expose absolute rects; `page_geometry.py` exposes both | engine-neutral spaces: `PDF_NATIVE_PAGE_SPACE`, `PAGE_MEDIA_SPACE`, `PAGE_LAYOUT_SPACE`, `IMPOSED_SHEET_SPACE`, raster/widget/device pixel | — |
 | GUI representation | points in core, mm in GUI (`AGENTS.md`) | as stated (`CODE`) | engine-neutral contract: top-left, x-right/y-down unrotated platform spaces, raw bottom-left PDF evidence retained | labs: points in backend, mm in GUI |
 | Normalize-to-Zero | "original note describes a normalize-to-zero internal model `Point_Internal = Point_PDF - MediaBox.Origin`" (`doc/pdf_preflight_readme_3.md`) | `core.normalize_boxes` explicitly does **not** subtract MediaBox origin (comment) and zeroes on the layout basis instead | EN acceptance: `NEGATIVE_MEDIABOX_ORIGIN: ACCEPTED` for the pikepdf Manual Trim writer | VAB fixture `stage6_negative_origin_rotate_90.pdf` |
@@ -299,7 +355,10 @@ Distinction summary:
 ```text
 ACCEPTED PLATFORM LAW     = layout priority (as stated), pt/mm separation,
                             GUI geometry != PDF-write geometry
-CURRENT IMPLEMENTATION    = two box-selection rules (core vs page_geometry),
+CURRENT IMPLEMENTATION    = TRANSITIONAL_DUAL_GEOMETRY_PATH:
+                            page_geometry.py implements the accepted policy;
+                            legacy core.normalize_boxes still implements older
+                            behavior (LEGACY_IMPLEMENTATION_DRIFT);
                             PyMuPDF rects as GUI geometry
 MIGRATION TARGET          = engine-neutral value model (implemented on EN,
                             not yet consumed by GUI)
@@ -580,7 +639,7 @@ call in common (`CODE`); the Operation Registry is `DESIGN_INTENT`.
 |---|---|
 | Purpose | mirror-bleed generation around arbitrary TrimBox; box sanitation; rotation normalization; raster fallback |
 | Implemented | `gui_vector_autobleed.py` (955 lines, **PySide6**), vector backend (Form XObject + eight clipped reflection CTMs, 0.75 pt inward overlap), `raster_bleed_engine.py` (600 DPI fallback), `rotation_normalization.py`, `rotation_validation.py`, OCG catalog cloning; compiled `dist/VectorAutoBleed_v0.26.exe` referenced |
-| Tests | 10 test files under `tests/` (as-built report records "60 passed" for v0.2.2) — not executed here |
+| Tests | current accepted baseline (H2B fresh independent review + Human acceptance, `doc/agent_orchestration/IMPOZITORIUM_WORKSTATION_UNIQUE_ASSET_HARVEST_H2B_VECTOR_AUTOBLEED_LAB_FRESH_INDEPENDENT_REVIEW_01.md`, `…_H2B_VECTOR_AUTOBLEED_LAB_HUMAN_ACCEPTANCE_01.md`): `LAB_TEST_FILE_COUNT = 11`, `TEST_COUNT = 169`, `PASSED = 169`, `SKIP_COUNT = 0`, `FAIL_COUNT = 0`, `EDGE_INSET_PT = 0.75`, `EDGE_INSET_REPRODUCIBILITY = PROVEN`, `WORKSTATION_RUNTIME_SEMANTICS_PRESERVED = YES`, `UNEXPLAINED_SEMANTIC_DELTA = NONE` (`CONTRACT`; from accepted repository review evidence — not executed in this reconnaissance). The as-built report's "60 passed" for v0.2.2 is a `HISTORICAL LAB-LOCAL RECORD`, not the current accepted baseline |
 | Unique production knowledge | negative-CTM mirror construction; seam elimination (center-first order, inset); DeviceCMYK preservation; Transparency Group / ExtGState preservation during sanitation; ArtBox translation |
 | Overlap with platform | Page Geometry, rotation gate/normalizer, Optional Content, box policy; lab carries **byte-identical copies** of six platform documents (`page_geometry_contract.md`, `page_geometry_backend_contract.md`, `manual_trim_module_policy.md`, `box_policy_standard.md`, `rotation_compatibility_gate_and_normalizer.md`, `Bleed Reconstruction Policy.md`) |
 | Boundary documents | `VECTOR_AUTOBLEED_LAB_BOUNDARY.md`, `AGENT.md`, H2B harvest review + Human acceptance |
@@ -650,7 +709,7 @@ boundary → `DESIGN_INTENT`.
 | C-01 | CONTRADICTION | authority of `current_state.md` | EN `doc/current_state.md` header `HISTORICAL_SNAPSHOT_NOT_CURRENT_AUTHORITY`; EN index Core Rule | OW index Core Rule routes orientation to `current_state.md`; OW extends it as current File Factory ledger | same path, opposite authority by branch | branch-local; no cross-line resolution |
 | C-02 | DOCUMENTATION_DRIFT | File Factory frontier | OW `current_state.md`: `WAVE_03 = NOT_AUTHORIZED`, `NEXT_CANDIDATE_HUMANGATE = WAVE_03_HUMAN_AUTHORIZATION_DECISION` (last updated `a6142a4`, 2026-10-01) | OW index title "…Wave-03 S1/S2 publication"; commits `2acaf8b` (W3-S1), `db95756` (W3-S2 accepted) | ledger not updated after 2026-10-01 | index + commits newer |
 | C-03 | DOCUMENTATION_DRIFT | EN lifecycle status | EN index header: `SUCCESSOR_FINAL_IMPLEMENTATION: NOT_OPENED`, `SCHEMA_IMPLEMENTATION: NOT_OPENED`, `D2_FULL_LIFECYCLE: STILL_BLOCKED` | same index row + `…PHASE_6_HUMAN_ACCEPTANCE_01.md`: phases 1–6 accepted, schema v5, `QUALIFIED_SAME_VOLUME_BASELINE` | header block not updated | acceptance record newer |
-| C-04 | CONTRADICTION | layout-box basis | `preflight/core.py::normalize_boxes`: TrimBox → BleedBox → MediaBox + Corel shift | `preflight/page_geometry.py` and `agent_briefing.md`: TrimBox → ArtBox → CropBox → MediaBox | two implemented rules feed GUI vs backend geometry | policy names the second; code runs both |
+| C-04 | TRANSITIONAL_DUAL_OWNERSHIP (legacy implementation drift from accepted/current geometry policy) | layout-box basis | legacy `preflight/core.py::normalize_boxes`: TrimBox → BleedBox → MediaBox + Corel shift + GUI zeroing | newer `preflight/page_geometry.py` (`choose_layout_box`) and `agent_briefing.md`: TrimBox → ArtBox → CropBox → MediaBox | the legacy path has not yet been displaced by the newer implementation | policy-bearing direction = TrimBox → ArtBox → CropBox → MediaBox; one policy, two code paths (`TRANSITIONAL_DUAL_GEOMETRY_PATH`) |
 | C-05 | CONTRADICTION | engine statement in entry docs | `AGENTS.md` "Default PyMuPDF rendering"; `application_stack_and_operation_registry_policy.md` "Python / PyMuPDF PDF engine" | D-01 PDFium target, D-02 pikepdf target, D-03 PyMuPDF absent from production | entry docs predate Course D and are shared by both lines | D-01…D-03 accepted on EN only |
 | C-06 | BRANCH_DIVERGENCE | `preflight/renderer.py` | OW: `PreviewRenderCoordinator` (GUI PDFium Gate D) | EN: provider registry `create_renderer/render` used by MT writer | same module path, unrelated contents | no line chosen |
 | C-07 | BRANCH_DIVERGENCE | PDFium preview | OW Gate D (D2–D6) files `pdfium_backend.py`, `pdfium_worker.py`, `preview_runtime_contract.py` | Gate C implementation only on `pdfium-gate-c-…-03` / `stage8-…-02`; EN has none of these files | three separate PDFium preview states | not proven |
@@ -669,7 +728,6 @@ boundary → `DESIGN_INTENT`.
 | C-20 | LAB_PLATFORM_SEMANTIC_GAP | technical marks | four producers (§16) | no platform technical-layer policy | ownership not assigned | `DESIGN_INTENT` only |
 | C-21 | LAB_PLATFORM_SEMANTIC_GAP | VAB structural writes | VAB writes boxes/bleed with PyMuPDF; OCG preservation by catalog clone | D-02 pikepdf target; platform OC acceptance chain (OC-3 postflight) | lab semantics outside platform OC/engine law | lab-owned |
 | C-22 | AMBIGUITY | VectorAutoBleed version | EN index: "VectorAutoBleed v0.3.0" rotation handoff | lab branch `HISTORY.md`: `CURRENT_VERSION = 0.2.2` | possibly separate version streams; not stated | not proven |
-| C-23 | AMBIGUITY | remote publication | acceptance records: "does not authorize remote publication / push" (Agent Hierarchy derived, H1 harvest) | branches present on the remote copied by the mirror | no authorization record found | see M-02 |
 | C-24 | HISTORICAL_RESIDUE | default branch | `main` = 2026-04-28 prototype, default branch | all accepted work on unmerged lines | default branch does not represent current work | topology `NOT_DECIDED` (policy) |
 | C-25 | DOCUMENTATION_DRIFT | geometry contract status | `doc/page_geometry_contract.md` `Status: Draft`, v0.1, "future" | engine-neutral contract routed as normative; EN core implemented | older draft remains routed | engine-neutral contract newer |
 | C-26 | BRANCH_DIVERGENCE | `engine_neutral_geometry.py` | OW version | EN version (diff ≈1,436 lines) | same module path, different content | not reconciled |
@@ -677,14 +735,18 @@ boundary → `DESIGN_INTENT`.
 Counts:
 
 ```text
-CONTRADICTION                = 3   (C-01, C-04, C-05)
+CONTRADICTION                = 2   (C-01, C-05)
 DOCUMENTATION_DRIFT          = 3   (C-02, C-03, C-25)
 BRANCH_DIVERGENCE            = 6   (C-06, C-07, C-08, C-09, C-13, C-26)
-TRANSITIONAL_DUAL_OWNERSHIP  = 3   (C-10, C-11, C-12)
-AMBIGUITY                    = 5   (C-14, C-15, C-16, C-22, C-23)
+TRANSITIONAL_DUAL_OWNERSHIP  = 4   (C-04, C-10, C-11, C-12)
+AMBIGUITY                    = 4   (C-14, C-15, C-16, C-22)
 LAB_PLATFORM_SEMANTIC_GAP    = 5   (C-17 … C-21)
 HISTORICAL_RESIDUE           = 1   (C-24)
-TOTAL                        = 26
+TOTAL                        = 25
+
+C-23 (remote publication) was removed from the register by Bounded
+Correction 01 and is kept only as repository evidence gap M-02.
+IDs are not renumbered.
 ```
 
 ---
@@ -719,10 +781,9 @@ HISTORICAL != CURRENT
 | ID | Question | Why repository is insufficient | Source required |
 |---|---|---|---|
 | M-01 | What is "Define Framebox" and where does it live? | no occurrence of the term on any branch | Human Owner definition / external source |
-| M-02 | How were `derived/*`, `harvest/*`, `sandbox/*` lab branches published remotely when their acceptance records deny remote-publication authority? | no remote-publication authorization records found | Human publication records / canonical remote history |
+| M-02 | Repository evidence gap: the mirror contains remotely published branches (`derived/*`, `harvest/*`, `sandbox/*` labs), while their local acceptance documents record that remote publication was not authorized at that earlier acceptance-publication stage. The later Human authorization that permitted the remote push is not materialized in this repository snapshot. No governance violation is inferred. | later Human authorization records are outside the repository | Human/Coordinator publication records |
 | M-03 | Which line (OW, EN, OC, or a future one) is the intended integration trunk, and how will OW and EN reconverge? | policy says topology `NOT_DECIDED`; no merge plan found | Human decision |
 | M-04 | Byte provenance of originals referenced by derived publications (`a9bb8d6…` Agent Hierarchy basis; `fa40c1cf…` OC legacy reference head) | both commits are absent from the mirror | original local repositories / canonical history |
-| M-05 | Do mirror SHAs equal canonical SHAs? | canonical not accessed; mirror manifest not in mirror | mirror manifest file + canonical ref listing |
 | M-06 | Do the recorded test results still hold? | tests not executed in this pass; Windows/PyQt6/pikepdf/pypdfium2 runtime | authorized execution environment |
 | M-07 | Kandev chassis actual installed version and behavior | Blueprint 08: `CURRENT_LOCAL_DESKTOP_BINARY_VERSION = NOT_PROVEN`; Kandev source is external | workstation evidence |
 | M-08 | Licensing / legal basis motivating PyMuPDF exit | Route B legal review preparation exists "does not provide a legal opinion" | legal review outcome |
@@ -732,7 +793,10 @@ HISTORICAL != CURRENT
 | M-12 | External fixture corpus (A0, A1, BAD_MT) contents | only SHA-256 identities in Git; binaries intentionally not committed | fixture store |
 | M-13 | Current role and deployment of the D01 kernel driver source | removed from v0 critical path; later use not stated | Human decision / Operator Workplace records |
 
-`MISSING_CONTEXT_ITEMS = 13`
+`MISSING_CONTEXT_ITEMS = 12`
+
+M-05 (mirror SHA equality) was resolved by coordinator-provided mirror-build
+evidence (§1.2) and removed by Bounded Correction 01. IDs are not renumbered.
 
 ---
 
@@ -752,11 +816,13 @@ HISTORICAL != CURRENT
    Content work on the legacy engine. These lines do not share code for the
    same modules (`renderer.py`, `engine_neutral_geometry.py`,
    `manual_trim_export.py`, `preflight_gui/window.py` differ).
-3. The operator-facing product that runs today is the PyQt6 Preflight shell
-   with diagnostics, rulers/overlays and one mounted production module,
-   Manual Trim, on PyMuPDF for rendering and writing, with a legacy Working
-   Document / Preview Result / Save As path. Step & Repeat exists as a legacy
-   standalone window outside the shell.
+3. The operator-facing implementation observed in the repository is the
+   PyQt6 Preflight shell with diagnostics, rulers/overlays and one mounted
+   capability, Manual Trim, on the legacy PyMuPDF rendering/writing path, with
+   a legacy Working Document / Preview Result / Save As path. Step & Repeat
+   exists as a legacy standalone window outside the shell.
+   `REPOSITORY IMPLEMENTATION OBSERVED != DEPLOYED PRODUCTION BUILD`: which
+   build operators use in production remains `NOT_PROVEN` (M-11).
 4. Engine ownership is in a declared controlled transition: PDFium (render)
    and pikepdf/qpdf (structural) are accepted targets and exist as backends
    on the EN-line, but are not bound to the GUI or to Save As.
@@ -776,10 +842,12 @@ HISTORICAL != CURRENT
    separation, recorded through acceptance/review documents. It is enforced in
    code only inside the File Factory; elsewhere it is policy and document
    practice.
-9. The repository records 26 register items: 3 contradictions,
-   3 documentation drifts, 6 branch divergences, 3 declared transitional dual
-   ownerships, 5 ambiguities, 5 lab–platform semantic gaps and 1 historical
-   residue item. 13 questions cannot be settled from repository evidence.
+9. The register holds 25 items: 2 contradictions, 3 documentation drifts,
+   6 branch divergences, 4 transitional dual ownerships (3 declared engine /
+   filesystem transitions plus legacy geometry drift), 4 ambiguities,
+   5 lab–platform semantic gaps and 1 historical residue item. 12 questions
+   cannot be settled from repository evidence. Permanent integration topology
+   remains `NOT DECIDED / NOT PROVEN`.
 
 ---
 
