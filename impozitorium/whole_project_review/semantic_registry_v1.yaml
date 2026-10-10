@@ -54,15 +54,14 @@ sources:
     Adobe Acrobat help on output intents, PDFlib PDF/X output intents). ICC.2 (iccMAX) not reviewed.'
   SRC.ISO15930_PDFX: ISO 15930 (PDF/X family). Secondary sources state a PDF/X file defines MediaBox plus
     TrimBox or ArtBox, BleedBox when bled, and an OutputIntent. Normative text NOT accessed.
-  SRC.ISO19593_1: 'ISO 19593-1 ''Graphic technology - Use of PDF to associate processing steps and content
-    data - Part 1: Processing steps for packaging and labels''. Reference edition per Human/Coordinator:
-    ISO 19593-1:2026 (Edition 2); ISO 19593-1:2018 superseded. Independently observed (search summaries;
-    iso.org/pdfa.org not reachable from this environment): ISO 2018 page states replacement by ISO/PRF
-    19593-1; Edition 2 passed DIS/FDIS stages; BSI lists BS ISO 19593-1 published 2026-03-05 as identical
-    adoption. Method: processing-step metadata on optional content groups; group examples Structural,
-    Dimensions, Braille, Legend, Position, White, Varnish; Structural types in the 2018-era draft include
+  SRC.ISO19593_1: 'ISO 19593-1:2026 (Edition 2) ''Graphic technology - Use of PDF to associate processing
+    steps and content data - Part 1: Processing steps for packaging and labels''. Status: PUBLISHED, current
+    (COORDINATOR_VERIFIED_STANDARD_STATUS); ISO 19593-1:2018 WITHDRAWN / SUPERSEDED. CLAUDE_DIRECT_PRIMARY_SOURCE_ACCESS
+    = NOT_AVAILABLE_IN_SESSION (iso.org / pdfa.org blocked by egress policy). Method as reported by search
+    summaries: processing-step metadata on optional content groups; group examples Structural, Dimensions,
+    Braille, Legend, Position, White, Varnish; Structural types reported from the 2018-era draft include
     Cutting, PartialCutting, Creasing, CuttingCreasing, Perforating, Folding, Punching, Gluing (Edition
-    2 type list NOT verified). Normative text NOT accessed.'
+    2 type list NOT verified). Normative text NOT read in this session.'
   SRC.ISO32000_GRAPHICS_STATE: ISO 32000 graphics state current transformation matrix (CTM). Normative
     text NOT accessed.
   SRC.ISO32000_OPTIONAL_CONTENT: ISO 32000 optional content (OCG / OCMD / OCProperties). Normative text
@@ -112,6 +111,7 @@ sources:
 ambiguous_terms:
   CTM:
   - PDF.CTM
+  - PRODUCTION.PLACED_OBJECT_CTM
   - GEOMETRY.PLACEMENT_TRANSFORM
   D1 / D01 / D-01 / D2:
   - GOVERNANCE.ENGINE_DECISION
@@ -164,7 +164,7 @@ ambiguous_terms:
   - GOVERNANCE.REPOSITORY_COMMIT
   - ARTIFACT.GENERATED_RESULT_COMMIT
   content object:
-  - PRODUCTION.PLACED_CONTENT
+  - PRODUCTION.CONTENT_OBJECT
   - PRODUCTION.PRODUCTION_OBJECT
   crop:
   - PDF.BOX.CROP
@@ -836,9 +836,10 @@ entries:
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
   notes: 'Important for Vector AutoBleed: its mirror clips are clip regions, not frames or CropBoxes.
-    [Standards mapping 01] CIP4 ClipBox (rectangular clip of a placed object on a surface, typically set
-    from TrimBox or BleedBox per PJTF) is a placement-level specialization of a clip region; CLOSE_BUT_NOT_SAME,
-    so not an alias.'
+    [Standards mapping 01] CIP4 ClipBox = placement-specific rectangular clipping representation associated
+    with a placed object in the surface coordinate system (typically derived from TrimBox or BleedBox
+    per PJTF). Relationship to clip region: SPECIALIZATION / RELATED, NOT SAME; no alias. ClipBox != CropBox,
+    ClipBox != Framebox; ClipRegion != CropBox, ClipRegion != Framebox. Evidence: SEARCH_SUMMARY_SUPPORTED_MAPPING.'
 - canonical_id: GEOMETRY.CONTENT_BOUNDS
   canonical_name: content bounds
   semantic_class: PLATFORM_TERM
@@ -918,17 +919,17 @@ entries:
     target: PLATFORM.GEOMETRY_CORE
   - type: related_to
     target: PRODUCTION.FINISHED_SIZE
-  - type: projected_on_placement_as
-    target: PRODUCTION.PLACED_CONTENT
+  - type: possibly_projected_on_placement_into
+    target: PRODUCTION.PLACED_OBJECT
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
   notes: 'Rectangular by definition; remains valid when contour support (GEOMETRY.PRODUCTION_CONTOUR)
     is added. Spelling ''FrameBox'' deprecated because it imitates PDF page-box key naming. [Standards
-    mapping 01] No equivalent industry term demonstrated; remains IMPOZITORIUM_EXTENSION. Framebox <->
-    TrimBox: may be derived from it (via layout box), not equivalent. Framebox <-> finished size / XJDF
-    FinishedDimensions: related (intended product size vs platform working rectangle), not equivalent.
-    Framebox <-> CIP4 TrimSize/TrimCTM: a placed content''s TrimSize/TrimCTM is a placement-level projection
-    of a rectangular finished frame; related, not equivalent.'
+    mapping 01] No equivalent industry term demonstrated; remains IMPOZITORIUM_EXTENSION. Framebox exists
+    conceptually before placement. Framebox <-> TrimBox: may be derived from it (via layout box), not
+    equivalent. Framebox <-> finished size / XJDF FinishedDimensions: related, not equivalent. Framebox
+    <-> CIP4 PlacedObject TrimSize / TrimCTM: RELATED, POSSIBLE PROJECTION / MAPPING, NOT_EQUIVALENT (TrimSize/TrimCTM
+    describe trimming geometry in the placement/imposition representation). Evidence: SEARCH_SUMMARY_SUPPORTED_MAPPING.'
 - canonical_id: GEOMETRY.FRAME_INTENT
   canonical_name: frame intent
   semantic_class: PLATFORM_TERM
@@ -1117,26 +1118,28 @@ entries:
 - canonical_id: GEOMETRY.PLACEMENT_TRANSFORM
   canonical_name: placement transform
   semantic_class: PLATFORM_TERM
-  definition: Affine transform that positions an unchanged object (placed content or placed mark) in an
-    imposition / output context. It never changes the canonical working artifact. In CIP4 Layout it is
-    represented by the CTM attribute of a PlacedObject.
+  definition: Affine transform that changes only the placement of an unchanged object in an imposition
+    / output space. It never changes the canonical working artifact. In CIP4 Layout it is related to /
+    represented by the placement CTM carried by a PlacedObject.
   domain: GEOMETRY
   source_basis:
   - SRC.CIP4_LAYOUT_ICS
   - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
   standard_alignment: STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
-  aliases:
-  - CIP4 CTM
-  - PlacedObject CTM
+  aliases: []
   deprecated_aliases: []
   not_equivalent_to:
   - GEOMETRY.DOCUMENT_TRANSFORM
   - PDF.CTM
-  relationships: []
+  - PRODUCTION.PLACED_OBJECT_CTM
+  relationships:
+  - type: represented_in_cip4_by
+    target: PRODUCTION.PLACED_OBJECT_CTM
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
   notes: Mathematically an engine-neutral affine transform (IMPOSITORIUM_AFFINE_COLUMN_VECTOR_V1); generic
-    affine maths is NOT called CTM outside this placement context.
+    affine maths is NOT called CTM outside the placement context. Platform concept is related to, not
+    identical with, the CIP4 attribute.
 - canonical_id: GEOMETRY.PRODUCTION_CONTOUR
   canonical_name: production contour
   semantic_class: PLATFORM_TERM
@@ -2230,10 +2233,10 @@ entries:
   relationships: []
   owner: PLATFORM.STRUCTURAL_PDF_CORE
   status: NEEDS_STANDARD_REVIEW
-  notes: Candidate realization for technical objects; platform representation NOT_DECIDED. [Standards
-    mapping 01] Reference edition ISO 19593-1:2026 (Edition 2) per Human/Coordinator; 2018 edition superseded.
-    Publication of the 2026 ISO edition could not be independently confirmed from this environment (ISO/PRF
-    and BS ISO 2026-03-05 evidence only).
+  notes: 'Candidate realization for technical objects; platform representation NOT_DECIDED. [Standards
+    mapping 01] Current standard: ISO 19593-1:2026, Edition 2, PUBLISHED (COORDINATOR_VERIFIED_STANDARD_STATUS);
+    ISO 19593-1:2018 WITHDRAWN / SUPERSEDED. CLAUDE_DIRECT_PRIMARY_SOURCE_ACCESS = NOT_AVAILABLE_IN_SESSION;
+    normative wording and Edition 2 group/type semantics remain NEEDS_NORMATIVE_STANDARD_REVIEW.'
 - canonical_id: PDF.USER_UNIT
   canonical_name: UserUnit
   semantic_class: STANDARD_TERM
@@ -2465,6 +2468,33 @@ entries:
   status: CANONICAL_V1
   notes: '[Standards mapping 01] JDF StrippingParams carries per-edge bleed values (e.g. BleedFace, BleedSpine,
     BleedHead, BleedFoot) as reported; related, not mapped.'
+- canonical_id: PRODUCTION.CONTENT_OBJECT
+  canonical_name: content object payload
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: The content payload/details carried by a placed object (which page/content is placed), as
+    distinct from the placement occurrence itself. Reuses the CIP4 JDF/XJDF ContentObject concept.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - ContentObject
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.FRAMEBOX
+  - PRODUCTION.PLACED_OBJECT
+  - PRODUCTION.PRODUCTION_OBJECT
+  relationships:
+  - type: payload_of
+    target: PRODUCTION.PLACED_OBJECT
+  - type: related_to
+    target: PRODUCTION.PRODUCTION_OBJECT
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: 'Replaces the Pass 01 entry placed-content, which wrongly equated ContentObject with the whole
+    placement. Evidence: SEARCH_SUMMARY_SUPPORTED_MAPPING; NEEDS_NORMATIVE_STANDARD_REVIEW (XJDF 2.2 normative
+    text not read in this session).'
 - canonical_id: PRODUCTION.CREEP
   canonical_name: creep
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2645,6 +2675,31 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: CANONICAL_V1
+- canonical_id: PRODUCTION.MARK_OBJECT
+  canonical_name: mark object payload
+  semantic_class: PRODUCTION_DOMAIN_TERM
+  definition: The mark payload/details carried by a placed object (mark graphics plus metadata such as
+    RegisterMark or colour measuring fields). Reuses the CIP4 JDF/XJDF MarkObject concept.
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  - SRC.CIP4_JDF_XJDF
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - MarkObject
+  deprecated_aliases: []
+  not_equivalent_to:
+  - PRODUCTION.PLACED_OBJECT
+  - TECHNICAL_OBJECT.TECHNICAL_OBJECT
+  relationships:
+  - type: payload_of
+    target: PRODUCTION.PLACED_OBJECT
+  - type: realizes_placement_of
+    target: TECHNICAL_OBJECT.TECHNICAL_OBJECT
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: 'Replaces the Pass 01 entry placed-mark (payload, not the placement occurrence). Evidence: SEARCH_SUMMARY_SUPPORTED_MAPPING;
+    NEEDS_NORMATIVE_STANDARD_REVIEW (XJDF 2.2 normative text not read in this session).'
 - canonical_id: PRODUCTION.N_UP_IMPOSITION
   canonical_name: N-up imposition
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2694,65 +2749,12 @@ entries:
   relationships: []
   owner: PRODUCTION
   status: PROVISIONAL
-- canonical_id: PRODUCTION.PLACED_CONTENT
-  canonical_name: placed content
-  semantic_class: PRODUCTION_DOMAIN_TERM
-  definition: One placement of unchanged content (a page / production object) on a sheet surface, positioned
-    by a placement transform and clipped by a placement clip. Reuses the CIP4 JDF/XJDF ContentObject concept
-    (CTM, ClipBox, TrimCTM, TrimSize, Ord).
-  domain: PRODUCTION
-  source_basis:
-  - SRC.CIP4_LAYOUT_ICS
-  - SRC.CIP4_JDF_XJDF
-  standard_alignment: NEEDS_STANDARD_REVIEW
-  aliases:
-  - ContentObject
-  - placed content object
-  deprecated_aliases:
-  - PlacedInstance
-  not_equivalent_to:
-  - GEOMETRY.FRAMEBOX
-  - PRODUCTION.PRODUCTION_OBJECT
-  relationships:
-  - type: instance_of
-    target: PRODUCTION.PRODUCTION_OBJECT
-  - type: positioned_by
-    target: GEOMETRY.PLACEMENT_TRANSFORM
-  - type: clipped_by
-    target: GEOMETRY.CLIP_REGION
-  owner: PRODUCTION
-  status: CANONICAL_V1
-  notes: The proposed term PlacedInstance is NOT introduced; it resolves here. TrimSize/TrimCTM describe
-    the finished-trim rectangle of this placement (placement-level projection), not a platform working
-    frame.
-- canonical_id: PRODUCTION.PLACED_MARK
-  canonical_name: placed mark
-  semantic_class: PRODUCTION_DOMAIN_TERM
-  definition: One placement of a mark / technical object on a sheet surface. Reuses the CIP4 JDF/XJDF
-    MarkObject concept (may carry metadata such as RegisterMark or colour measuring fields).
-  domain: PRODUCTION
-  source_basis:
-  - SRC.CIP4_LAYOUT_ICS
-  - SRC.CIP4_JDF_XJDF
-  standard_alignment: NEEDS_STANDARD_REVIEW
-  aliases:
-  - MarkObject
-  deprecated_aliases: []
-  not_equivalent_to:
-  - TECHNICAL_OBJECT.TECHNICAL_OBJECT
-  relationships:
-  - type: realizes_placement_of
-    target: TECHNICAL_OBJECT.TECHNICAL_OBJECT
-  - type: positioned_by
-    target: GEOMETRY.PLACEMENT_TRANSFORM
-  owner: PRODUCTION
-  status: CANONICAL_V1
 - canonical_id: PRODUCTION.PLACED_OBJECT
   canonical_name: placed object
   semantic_class: PRODUCTION_DOMAIN_TERM
-  definition: 'Any object placed on a sheet surface in an imposition layout: either placed content or
-    a placed mark. Reuses the CIP4 JDF/XJDF PlacedObject concept (abstract superclass of ContentObject
-    and MarkObject).'
+  definition: 'One placed occurrence on a sheet surface. It carries the placement semantics (placement
+    CTM, ClipBox, TrimSize, TrimCTM, ordering) and contains exactly one payload form: a content object
+    or a mark object. Reuses the CIP4 JDF/XJDF PlacedObject concept.'
   domain: PRODUCTION
   source_basis:
   - SRC.CIP4_LAYOUT_ICS
@@ -2760,20 +2762,52 @@ entries:
   standard_alignment: NEEDS_STANDARD_REVIEW
   aliases:
   - PlacedObject
-  deprecated_aliases: []
-  not_equivalent_to: []
+  deprecated_aliases:
+  - PlacedInstance
+  not_equivalent_to:
+  - PRODUCTION.CONTENT_OBJECT
+  - PRODUCTION.MARK_OBJECT
+  - PRODUCTION.PRODUCTION_OBJECT
   relationships:
-  - type: generalizes
-    target: PRODUCTION.PLACED_CONTENT
-  - type: generalizes
-    target: PRODUCTION.PLACED_MARK
+  - type: carries_payload
+    target: PRODUCTION.CONTENT_OBJECT
+  - type: carries_payload
+    target: PRODUCTION.MARK_OBJECT
   - type: placed_on
     target: PRODUCTION.SURFACE
   - type: positioned_by
-    target: GEOMETRY.PLACEMENT_TRANSFORM
+    target: PRODUCTION.PLACED_OBJECT_CTM
+  - type: clipbox_specializes
+    target: GEOMETRY.CLIP_REGION
   owner: PRODUCTION
   status: CANONICAL_V1
-  notes: Mapping SAME at concept level per JDF 1.4 Layout ICS; XJDF 2.2 normative definition not reviewed.
+  notes: 'The proposed term PlacedInstance is NOT a canonical platform term; it survives only as a deprecated
+    alias resolving here. Evidence: SEARCH_SUMMARY_SUPPORTED_MAPPING; NEEDS_NORMATIVE_STANDARD_REVIEW
+    (XJDF 2.2 normative text not read in this session).'
+- canonical_id: PRODUCTION.PLACED_OBJECT_CTM
+  canonical_name: CIP4 placement CTM
+  semantic_class: STANDARD_TERM
+  definition: 'The CTM attribute of a CIP4 PlacedObject: the placement transform from the placed object''s
+    native coordinate system into surface coordinates.'
+  domain: PRODUCTION
+  source_basis:
+  - SRC.CIP4_LAYOUT_ICS
+  standard_alignment: NEEDS_STANDARD_REVIEW
+  aliases:
+  - CIP4 CTM
+  - CIP4_PLACEMENT_CTM
+  - PlacedObject CTM
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.PLACEMENT_TRANSFORM
+  - PDF.CTM
+  relationships:
+  - type: attribute_of
+    target: PRODUCTION.PLACED_OBJECT
+  owner: PRODUCTION
+  status: CANONICAL_V1
+  notes: 'Evidence: SEARCH_SUMMARY_SUPPORTED_MAPPING; NEEDS_NORMATIVE_STANDARD_REVIEW (XJDF 2.2 normative
+    text not read in this session).'
 - canonical_id: PRODUCTION.PRODUCTION_INTENT
   canonical_name: production intent
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -2795,9 +2829,9 @@ entries:
 - canonical_id: PRODUCTION.PRODUCTION_OBJECT
   canonical_name: production object
   semantic_class: PLATFORM_TERM
-  definition: The single finished item to be produced from an artifact page, described by its working
-    geometry (Framebox), bleed semantics, optional production contour and artifact identity. Exists before
-    and independently of any placement.
+  definition: 'The intrinsic / source-side finished item to be produced from an artifact page: artifact
+    identity, Framebox, bleed semantics, optional production contour and other intrinsic product geometry.
+    Exists before and independently of any placement.'
   domain: PRODUCTION
   source_basis:
   - SRC.HUMAN_TASK_05
@@ -2807,7 +2841,7 @@ entries:
   deprecated_aliases: []
   not_equivalent_to:
   - PDF.PAGE
-  - PRODUCTION.PLACED_CONTENT
+  - PRODUCTION.PLACED_OBJECT
   relationships:
   - type: has_frame
     target: GEOMETRY.FRAMEBOX
@@ -2815,11 +2849,12 @@ entries:
     target: GEOMETRY.PRODUCTION_CONTOUR
   - type: has_extent
     target: GEOMETRY.PLACEMENT_OBJECT_EXTENT
+  - type: placed_via
+    target: PRODUCTION.PLACED_OBJECT
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
-  notes: 'Not equivalent to CIP4 ContentObject: ContentObject is placement-level (one instance on a surface);
-    the production object carries source-level semantics (Framebox, contour, bleed, artifact identity)
-    that ContentObject does not.'
+  notes: Relation to CIP4 ContentObject (PRODUCTION.CONTENT_OBJECT) = CLOSE_BUT_NOT_SAME / RELATED; exact
+    relationship not yet canonicalized. Not forced to equal ContentObject.
 - canonical_id: PRODUCTION.SALVAGE_MODE
   canonical_name: salvage mode
   semantic_class: POLICY_TERM
@@ -3174,16 +3209,17 @@ entries:
   not_equivalent_to:
   - PDF.PROCESSING_STEPS
   relationships:
-  - type: placed_as
-    target: PRODUCTION.PLACED_MARK
+  - type: realized_in_placement_as
+    target: PRODUCTION.MARK_OBJECT
   - type: realizable_as
     target: PDF.PROCESSING_STEPS
   owner: TECHNICAL_OBJECT
   status: CANONICAL_V1
   notes: 'TECHNICAL_OBJECT_EXACT_PDF_REPRESENTATION = NOT_DECIDED (OCG / ISO 19593 strong candidates).
     [Standards mapping 01] Remains the Impozitorium umbrella domain concept (SUPERSET): it includes service
-    text, labels, numbering and contour lines. CIP4 MarkObject is a placement-level realization; ISO 19593
-    processing-step objects are a PDF realization for finishing data. Neither is equivalent to the umbrella.'
+    text, labels, numbering and contour lines. CIP4 MarkObject is the placement-level mark payload / realization;
+    ISO 19593 processing-step objects are a PDF realization for finishing data. Neither is equivalent
+    to the umbrella.'
 - canonical_id: TECHNICAL_OBJECT.TRIM_MARK
   canonical_name: trim mark
   semantic_class: PRODUCTION_DOMAIN_TERM

@@ -61,6 +61,29 @@ ACCESS_LIMITATION = iso.org, pdfa.org and cip4.org were not reachable from this
                     search-result summaries of the cited documents.
 ```
 
+## Revision note — Standards Mapping Bounded Correction 01
+
+```text
+CORRECTION_SCOPE =
+    ISO 19593-1 current edition status
+    PlacedObject / ContentObject hierarchy
+    placement CTM semantics
+    TrimSize / TrimCTM relationship to Framebox
+    ClipBox relationship to ClipRegion
+
+NEW_ARCHITECTURE = NONE
+NEW_IMPLEMENTATION_AUTHORIZATION = NONE
+```
+
+Registry effect (169 → 170 entries). The Pass 01 entries for "placed
+content" and "placed mark" wrongly treated CIP4 ContentObject and MarkObject
+as placement occurrences. They are replaced by the payload entries
+`PRODUCTION.CONTENT_OBJECT` and `PRODUCTION.MARK_OBJECT`.
+`PRODUCTION.PLACED_OBJECT` is redefined as the placement occurrence, and
+*PlacedInstance* now resolves to it. `PRODUCTION.PLACED_OBJECT_CTM` (the CIP4
+placement CTM) is added as a distinct entry. ISO 19593-1:2026 Edition 2 is
+recorded as published (coordinator-verified).
+
 ---
 
 ## 1. Purpose and authority
@@ -209,9 +232,9 @@ lists the bare words below that must always be qualified.
 | K-34 | bleed | BleedBox | bleed region; bleed amount | standards, VAB | | C |
 | K-35 | CTM | PDF graphics-state CTM (`PDF.CTM`) | CIP4 PlacedObject CTM attribute (`GEOMETRY.PLACEMENT_TRANSFORM`); generic affine maths | ISO 32000, CIP4 Layout ICS | placement maths mistaken for content-stream maths | C (always qualify) |
 | K-36 | Layout (CIP4) vs layout box | CIP4 Layout resource (`PRODUCTION.IMPOSITION_LAYOUT`) | `GEOMETRY.LAYOUT_BOX` / layout space | CIP4 Layout ICS | imposition layout confused with page layout basis | C ("layout" extended) |
-| K-37 | ContentObject / content object | CIP4 ContentObject = one placement (`PRODUCTION.PLACED_CONTENT`) | source-level production object (`PRODUCTION.PRODUCTION_OBJECT`) | CIP4 Layout ICS | placement instance mistaken for the product | C |
-| K-38 | TrimSize / TrimCTM vs TrimBox | placement-level finished-trim rectangle of a ContentObject | PDF page TrimBox; platform Framebox | CIP4 examples | three "trim" rectangles at different levels | **S** |
-| K-39 | ClipBox vs CropBox vs clip region | CIP4 ClipBox (placement clip) | PDF CropBox; `GEOMETRY.CLIP_REGION` | CIP4, PJTF, ISO 32000 | clip semantics conflated | C |
+| K-37 | ContentObject / content object | CIP4 ContentObject = content payload inside a PlacedObject (`PRODUCTION.CONTENT_OBJECT`) | placement occurrence (`PRODUCTION.PLACED_OBJECT`); source-level production object (`PRODUCTION.PRODUCTION_OBJECT`) | CIP4 Layout ICS (search summaries) | payload, placement and product conflated | C |
+| K-38 | TrimSize / TrimCTM vs TrimBox vs Framebox | trimming geometry carried by a PlacedObject in the placement representation | PDF page TrimBox; platform Framebox (intrinsic, pre-placement) | CIP4 examples | three "trim" rectangles at different levels | **S** |
+| K-39 | ClipBox vs CropBox vs clip region | CIP4 ClipBox = placement-specific rectangular clip of a placed object (surface coordinates) | PDF CropBox; `GEOMETRY.CLIP_REGION` (generic algorithm clip) | CIP4, PJTF, ISO 32000 | clip semantics conflated | C |
 
 `COLLISIONS_IDENTIFIED = 39` (34 + 5 from Standards Mapping Pass 01). Of
 these, 35 are canonicalizable now, 2 need an architectural decision (K-02,
@@ -537,7 +560,7 @@ citation, marked as such.
 | layout box, layout space, Framebox, frame intent, clip region, admissibility, Operation Record | IMPOZITORIUM_EXTENSION | derived from standard PDF boxes / accepted decisions | explicitly not standard terms |
 
 Registry totals: STANDARD_ALIGNED 14, STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
-5, ESTABLISHED_DOMAIN_TERM 19, NEEDS_STANDARD_REVIEW 20,
+5, ESTABLISHED_DOMAIN_TERM 19, NEEDS_STANDARD_REVIEW 21,
 IMPOZITORIUM_EXTENSION 111.
 
 ---
@@ -546,21 +569,49 @@ IMPOZITORIUM_EXTENSION 111.
 
 **Sources and evidence strength.**
 
-- **ISO 19593-1.** Reference edition per Human/Coordinator: **ISO
-  19593-1:2026 (Edition 2)**, superseding 2018. What I could observe
-  independently, from search summaries only: ISO's 2018 page says it will be
-  replaced by ISO/PRF 19593-1; Edition 2 passed the DIS/FDIS stages; BSI
-  lists BS ISO 19593-1 as published 2026-03-05 as an identical adoption. The
-  ISO publication record itself could not be fetched (egress policy).
+- **ISO 19593-1.** Current standard: **ISO 19593-1:2026, Edition 2,
+  PUBLISHED**. ISO 19593-1:2018 is **WITHDRAWN / SUPERSEDED**.
+
+  ```text
+  COORDINATOR_VERIFICATION                = CURRENT EDITION STATUS CONFIRMED
+  CLAUDE_DIRECT_PRIMARY_SOURCE_ACCESS     = NOT_AVAILABLE_IN_SESSION
+  NORMATIVE_WORDING / EDITION 2 GROUP AND TYPE SEMANTICS = NEEDS_NORMATIVE_STANDARD_REVIEW
+  ```
 - **CIP4 JDF/XJDF.** JDF 1.4 *Layout Creator to Imposition ICS*, the CIP4
   Pagination Catalog and the *XJDF for Developers* presentation, all via
   search summaries. The XJDF 2.2 normative text was **not** accessed.
 - **ISO 32000.** Normative text not accessed.
 
-No normative wording or clause numbers are asserted. "SAME" below means
-concept-level equivalence on the available evidence. Entries keep
-`NEEDS_STANDARD_REVIEW` alignment wherever normative confirmation is
-outstanding.
+No normative wording or clause numbers are asserted. Evidence qualifiers
+used: `COORDINATOR_VERIFIED_STANDARD_STATUS`,
+`SEARCH_SUMMARY_SUPPORTED_MAPPING` and `NEEDS_NORMATIVE_STANDARD_REVIEW`. All
+CIP4 mappings below are `SEARCH_SUMMARY_SUPPORTED_MAPPING`. "SAME" means
+concept-level equivalence on that evidence, never schema-level equivalence.
+
+**Conceptual model (not a schema claim):**
+
+```text
+INTRINSIC / SOURCE SIDE
+  PRODUCTION.PRODUCTION_OBJECT            (PROVISIONAL, Impozitorium extension)
+      artifact identity
+      GEOMETRY.FRAMEBOX                    (intrinsic rectangular working frame)
+      GEOMETRY.PRODUCTION_CONTOUR          (optional, PROVISIONAL)
+      bleed / other intrinsic geometry
+              │
+              ▼  imposition (PRODUCTION.IMPOSITION)
+PLACEMENT SIDE  (CIP4 concepts)
+  PRODUCTION.IMPOSITION_LAYOUT (Layout) / PRODUCTION.SHEET (Sheet) / PRODUCTION.SURFACE (Side / Surface)
+              │
+              ▼
+  PRODUCTION.PLACED_OBJECT (PlacedObject)  — one placed occurrence
+      PRODUCTION.PLACED_OBJECT_CTM (CTM)   — represents GEOMETRY.PLACEMENT_TRANSFORM
+      ClipBox                              — specializes GEOMETRY.CLIP_REGION
+      TrimSize / TrimCTM                   — placement-side trimming geometry;
+                                             possible projection of the Framebox
+              │  exactly one payload
+              ▼
+  PRODUCTION.CONTENT_OBJECT (ContentObject)   OR   PRODUCTION.MARK_OBJECT (MarkObject)
+```
 
 | Concept | IMPOZITORIUM_ID | ISO 32000 | ISO 19593-1 | JDF / XJDF | Domain | Relationship | Action |
 |---|---|---|---|---|---|---|---|
@@ -568,10 +619,11 @@ outstanding.
 | layout_box | `GEOMETRY.LAYOUT_BOX` | derived from Trim/Art/Crop/MediaBox | — | none (≠ CIP4 Layout) | — | PLATFORM_EXTENSION | KEEP |
 | finished size | `PRODUCTION.FINISHED_SIZE` | TrimBox = finished page dimensions | — | XJDF LayoutIntent FinishedDimensions (shape) | established | CLOSE_BUT_NOT_SAME | KEEP (relationship noted) |
 | finished page | `PRODUCTION.FINISHED_PAGE` | ≠ PDF page | — | JDF finished page vs reader page | — | NEEDS_STANDARD_REVIEW | KEEP_PROVISIONAL (status NSR) |
-| production object | `PRODUCTION.PRODUCTION_OBJECT` (new) | — | — | ≠ ContentObject (placement-level) | — | PLATFORM_EXTENSION | KEEP_PROVISIONAL |
-| content object (placed) | `PRODUCTION.PLACED_CONTENT` (new) | — | — | ContentObject | — | SAME (concept) | MAP_TO_STANDARD_TERM |
-| placed instance / placed object | `PRODUCTION.PLACED_OBJECT` (new) | — | — | PlacedObject (abstract: ContentObject or MarkObject) | — | SAME (concept) | MAP_TO_STANDARD_TERM; *PlacedInstance* deprecated → PLACED_CONTENT |
-| placement transform / CTM | `GEOMETRY.PLACEMENT_TRANSFORM` (new) | ≠ graphics-state CTM | — | PlacedObject CTM | — | SPECIALIZATION (platform name, CIP4 representation) | ADD_STANDARD_ALIAS ("CIP4 CTM") |
+| production object | `PRODUCTION.PRODUCTION_OBJECT` | — | — | related to ContentObject; exact relationship not canonicalized | — | PLATFORM_EXTENSION; vs ContentObject CLOSE_BUT_NOT_SAME / RELATED | KEEP_PROVISIONAL |
+| placed instance / placed object | `PRODUCTION.PLACED_OBJECT` | — | — | PlacedObject = one placed occurrence on a Surface (CTM, ClipBox, TrimSize, TrimCTM; exactly one content or mark payload) | — | SAME (concept) | MAP_TO_STANDARD_TERM; *PlacedInstance* = deprecated alias → PLACED_OBJECT |
+| content object | `PRODUCTION.CONTENT_OBJECT` (replaces Pass 01 entry) | — | — | ContentObject = content payload of a PlacedObject | — | SAME (concept) | MAP_TO_STANDARD_TERM |
+| placement transform | `GEOMETRY.PLACEMENT_TRANSFORM` | ≠ graphics-state CTM | — | related to / represented by PlacedObject CTM | — | PLATFORM_EXTENSION, related to CIP4 | KEEP (no CTM alias) |
+| CIP4 placement CTM | `PRODUCTION.PLACED_OBJECT_CTM` (new) | ≠ graphics-state CTM | — | PlacedObject CTM attribute | — | SAME | MAP_TO_STANDARD_TERM (alias "CIP4 CTM") |
 | document transform | `GEOMETRY.DOCUMENT_TRANSFORM` (new) | — | — | none | — | PLATFORM_EXTENSION | KEEP |
 | PDF CTM | `PDF.CTM` (new) | graphics-state CTM | — | — | — | SAME | MAP_TO_STANDARD_TERM |
 | sheet | `PRODUCTION.SHEET` (new) | — | — | Sheet / SheetName partition | press sheet | SAME | MAP_TO_STANDARD_TERM |
@@ -579,13 +631,13 @@ outstanding.
 | layout / sheet composition | `PRODUCTION.IMPOSITION_LAYOUT` (new) | — | — | Layout resource | imposition layout | SAME (concept) | MAP_TO_STANDARD_TERM; *SheetComposition* deprecated |
 | sheet geometry | `GEOMETRY.SPACE.IMPOSED_SHEET` + `PRODUCTION.SHEET` | — | — | surface coordinates | — | covered | not introduced |
 | clip region | `GEOMETRY.CLIP_REGION` | ≠ CropBox; clipping path is a PDF mechanism | — | ClipBox is a placement-level specialization (typically from TrimBox / BleedBox per PJTF) | — | SUPERSET | KEEP (relation noted, no alias) |
-| ClipBox | → `GEOMETRY.CLIP_REGION` (note) | — | — | ContentObject ClipBox | — | SPECIALIZATION | no new ID |
-| TrimSize / TrimCTM | → `PRODUCTION.PLACED_CONTENT` (note) | relates to TrimBox | — | ContentObject attributes | — | NEEDS_STANDARD_REVIEW | no new ID |
+| ClipBox | → `GEOMETRY.CLIP_REGION` (note) | ≠ CropBox | — | PlacedObject ClipBox: placement-specific rectangular clip in surface coordinates | — | SPECIALIZATION / RELATED, NOT SAME | no new ID |
+| TrimSize / TrimCTM | → `PRODUCTION.PLACED_OBJECT` / `GEOMETRY.FRAMEBOX` (notes) | relates to TrimBox | — | PlacedObject trimming geometry in the placement representation | — | vs Framebox: RELATED, possible projection, NOT_EQUIVALENT | no new ID (NSR) |
 | production contour | `GEOMETRY.PRODUCTION_CONTOUR` | — | processing-step objects can *realize* it | cutting data not verified | die line | PLATFORM_EXTENSION | KEEP_PROVISIONAL |
 | finishing contour | `TECHNICAL_OBJECT.FINISHING_CONTOUR` | — | Structural processing-step objects (e.g. Cutting, Creasing, Perforating; Ed. 2 list unverified) | — | die line | CLOSE_BUT_NOT_SAME | KEEP (NSR) |
 | processing-step contour | → `PDF.PROCESSING_STEPS` (realization) | optional content | processing step | — | — | NEEDS_STANDARD_REVIEW | no new ID |
-| technical object | `TECHNICAL_OBJECT.TECHNICAL_OBJECT` | — | processing-step objects = one realization | MarkObject = placement realization | marks, slugs, labels | SUPERSET | KEEP |
-| mark object | `PRODUCTION.PLACED_MARK` (new) | — | — | MarkObject | — | SAME (concept) | MAP_TO_STANDARD_TERM |
+| technical object | `TECHNICAL_OBJECT.TECHNICAL_OBJECT` | — | processing-step objects = PDF production-processing realization | MarkObject = placement-level mark payload / realization | marks, slugs, labels | SUPERSET | KEEP |
+| mark object | `PRODUCTION.MARK_OBJECT` (replaces Pass 01 entry) | — | — | MarkObject = mark payload of a PlacedObject | — | SAME (concept) | MAP_TO_STANDARD_TERM |
 | cut mark | `TECHNICAL_OBJECT.CUT_MARK` | — | — | "cut, fold, or register marks" (generic); CutMark element not confirmed | established | NEEDS_STANDARD_REVIEW | KEEP (alignment → NSR) |
 | trim / crop mark | `TECHNICAL_OBJECT.TRIM_MARK` | — | — | not found | vendors mostly say "crop marks" | NEEDS_STANDARD_REVIEW | KEEP (NSR) |
 | fold mark | `TECHNICAL_OBJECT.FOLD_MARK` | — | Folding processing step (different: finishing data, not a mark) | mentioned | established | SAME (domain) | KEEP |
@@ -596,31 +648,35 @@ outstanding.
 
 **Special questions.**
 
-- **PlacedInstance.** Not introduced. One placement of unchanged content is
-  CIP4 **ContentObject** (`PRODUCTION.PLACED_CONTENT`). The umbrella of all
-  placements, content and marks, is CIP4 **PlacedObject**
-  (`PRODUCTION.PLACED_OBJECT`). *PlacedInstance* is kept only as a deprecated
-  alias resolving to `PRODUCTION.PLACED_CONTENT`.
-- **ContentObject vs production object.** Not the same concept. ContentObject
-  is placement-level: one instance on one surface, with CTM, ClipBox, TrimCTM,
-  TrimSize and Ord. The production object is source-level: Framebox, bleed
-  semantics, optional contour and artifact identity. A distinct
-  `PRODUCTION.PRODUCTION_OBJECT` (PROVISIONAL) is justified; a placed content
-  is an *instance of* it.
+- **PlacedInstance.** Not a canonical platform term. The established
+  placement-level concept is CIP4 **PlacedObject** (`PRODUCTION.PLACED_OBJECT`):
+  one placed occurrence on a surface, carrying CTM, ClipBox, TrimSize and
+  TrimCTM, and exactly one payload. *PlacedInstance* survives only as a
+  deprecated alias resolving to `PRODUCTION.PLACED_OBJECT`.
+- **ContentObject.** Not the placement occurrence. It is the content payload
+  carried inside a PlacedObject (`PRODUCTION.CONTENT_OBJECT`), just as
+  MarkObject is the mark payload (`PRODUCTION.MARK_OBJECT`).
+- **Production object vs ContentObject.** CLOSE_BUT_NOT_SAME / RELATED; the
+  exact relationship is not yet canonicalized. `PRODUCTION.PRODUCTION_OBJECT`
+  stays PROVISIONAL because it is richer and source-side: artifact identity,
+  Framebox, bleed semantics, optional production contour and other intrinsic
+  geometry. It is not forced to equal ContentObject.
 - **Layout / Sheet / Surface.** Reuse the CIP4 concepts: `PRODUCTION.SHEET`,
   `PRODUCTION.SURFACE` (Side; SurfaceContentsBox noted) and
   `PRODUCTION.IMPOSITION_LAYOUT` (Layout). *SheetComposition* and
   *SheetGeometry* are **not** introduced. The only platform extension kept is
   the coordinate space `GEOMETRY.SPACE.IMPOSED_SHEET`.
-- **Placement transform.** `GEOMETRY.PLACEMENT_TRANSFORM` changes only where
-  an unchanged object is placed, and is represented in CIP4 by the
-  PlacedObject **CTM**. `GEOMETRY.DOCUMENT_TRANSFORM` changes the canonical
-  working artifact and has no CIP4 counterpart. The PDF graphics-state CTM
-  (`PDF.CTM`) is a third, distinct concept. Generic affine maths stays
-  engine-neutral and is not called "CTM".
+- **Placement transform.** `GEOMETRY.DOCUMENT_TRANSFORM` changes the
+  canonical working artifact. `GEOMETRY.PLACEMENT_TRANSFORM` changes only the
+  placement of an unchanged object in imposition/output space, and is *related
+  to / represented by* the CIP4 placement CTM (`PRODUCTION.PLACED_OBJECT_CTM`).
+  That is a separate entry: the platform concept is not an alias of the CIP4
+  attribute. The PDF graphics-state CTM (`PDF.CTM`) is a third, distinct
+  concept. Bare "CTM" stays a must-qualify term covering all three. Generic
+  affine maths stays engine-neutral and is not called "CTM".
 - **Technical objects.** `TECHNICAL_OBJECT.TECHNICAL_OBJECT` remains the
-  Impozitorium umbrella (a SUPERSET). JDF MarkObject (`PRODUCTION.PLACED_MARK`)
-  is its *placement* realization; ISO 19593 processing-step objects are a
+  Impozitorium umbrella (a SUPERSET). JDF MarkObject (`PRODUCTION.MARK_OBJECT`)
+  is its placement-level mark payload / realization; ISO 19593 processing-step objects are a
   *PDF* realization for finishing data. Neither is equivalent to the umbrella.
 - **ProductionContour.** Retained as a PROVISIONAL platform abstraction for
   the physical-object outline. ISO 19593 processing-step objects (Structural
@@ -634,15 +690,23 @@ outstanding.
     intended product size).
   - Framebox ↔ XJDF FinishedDimensions: *related*; not equivalent (intent
     level, shape value).
-  - Framebox ↔ TrimSize / TrimCTM: *related*; a placed content's trim
-    rectangle is a placement-level projection of a rectangular finished frame.
+  - Framebox ↔ CIP4 PlacedObject TrimSize / TrimCTM: **RELATED, possible
+    projection / mapping, NOT_EQUIVALENT**. The Framebox is intrinsic and
+    exists before placement. TrimSize / TrimCTM describe trimming geometry in
+    the placement/imposition representation.
+- **ClipBox vs clip region.** CIP4 ClipBox is a placement-specific
+  rectangular clipping representation tied to a placed object in surface
+  coordinates. `GEOMETRY.CLIP_REGION` is the broader operation/algorithm
+  clipping geometry, used for example by Vector AutoBleed and placement
+  algorithms. They are SPECIALIZATION / RELATED, not the same. ClipBox ≠
+  CropBox, ClipBox ≠ Framebox, clip region ≠ CropBox, clip region ≠ Framebox.
 
 ## 17. Canonical Registry V1 summary
 
 ```text
 FILE                     = semantic_registry_v1.yaml
-ENTRIES                  = 169
-CANONICAL_V1             = 122
+ENTRIES                  = 170
+CANONICAL_V1             = 123
 PROVISIONAL              = 32
 NEEDS_STANDARD_REVIEW    = 7
 NEEDS_HUMAN_DECISION     = 3
@@ -653,7 +717,7 @@ NAMESPACES               = 14
 SOURCES                  = 41
 ```
 
-Entries per namespace: PDF 20, GEOMETRY 22, PRODUCTION 27, OPERATION 17,
+Entries per namespace: PDF 20, GEOMETRY 22, PRODUCTION 28, OPERATION 17,
 DEVINFRA 14, TECHNICAL_OBJECT 14, ARTIFACT 13, GOVERNANCE 11, MODULE 10,
 ARCHITECTURE 5, PLATFORM 5, DIAGNOSTIC 4, POLICY 4, UI 3.
 
@@ -697,10 +761,10 @@ production contour, content bounds, production object.
 `GEOMETRY.TARGET_CANVAS` (module-local), `PRODUCTION.STEP_AND_REPEAT_LAYOUT`,
 `GOVERNANCE.OC_WORKSTREAM` (OC-n labels), `DEVINFRA.D01_KERNEL_MEDIATION`.
 
-**Deprecated aliases (4):** *FrameBox* → Framebox;
+**Deprecated aliases (6):** *FrameBox* → Framebox;
 *Normalize-to-Zero* → layout space; *Page Geometry engine* → module Page
 Geometry; *acceptance (artifact)* → artifact admission; *PlacedInstance* →
-placed content (CIP4 ContentObject); *SheetComposition* → imposition layout
+placed object (CIP4 PlacedObject); *SheetComposition* → imposition layout
 (CIP4 Layout). (*crop mark* is no longer deprecated; see §13.)
 
 **Must-qualify words (31, registry `ambiguous_terms`):** OC, Operator
