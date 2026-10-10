@@ -23,6 +23,31 @@ STATUS =
 
 ---
 
+## Revision note — Bounded Correction 01
+
+```text
+CORRECTION_SCOPE =
+    Framebox semantics                                   (§9, GEOMETRY.FRAMEBOX)
+    frame intent separation                              (§9, GEOMETRY.FRAME_INTENT)
+    layout_box -> Framebox relationship                  (§9.2)
+    future contour relationship                          (§9, GEOMETRY.PRODUCTION_CONTOUR)
+    Platform Geometry Core naming/ownership              (§9, §18, §20 R13, §21)
+    clip-region clarification                            (§9, GEOMETRY.CLIP_REGION)
+    trim-mark / crop-mark deprecation rollback           (§5 K-16, §13, §19)
+
+ARCHITECTURAL_RECOMMENDATIONS_ADDED = NONE
+NEW_ARTIFACTS = NONE
+```
+
+Registry effect: `GEOMETRY.OPERATOR_FRAME_INTENT` is replaced by two
+entries, `GEOMETRY.FRAMEBOX` and `GEOMETRY.FRAME_INTENT` (158 → 159 entries).
+`PLATFORM.GEOMETRY_CORE` changes from NEEDS_HUMAN_DECISION to CANONICAL_V1
+(display name "Platform Geometry Core"). `TECHNICAL_OBJECT.TRIM_MARK` changes
+from PROVISIONAL to NEEDS_STANDARD_REVIEW, and "crop mark" is no longer a
+deprecated alias.
+
+---
+
 ## 1. Purpose and authority
 
 The whole-project review found that Impozitorium has no single canonical
@@ -38,7 +63,7 @@ This baseline:
 - inventories the language the project actually uses (§4);
 - records material collisions (§5);
 - fixes a namespace model and semantic classes (§6, §7);
-- registers 158 concepts with explicit status (`semantic_registry_v1.yaml`);
+- registers 159 concepts with explicit status (`semantic_registry_v1.yaml`);
 - separates what can be canonized now from what needs Human decision or
   standard review (§18).
 
@@ -133,7 +158,7 @@ lists the bare words below that must always be qualified.
 
 | # | Term | Meaning A | Meaning B (and more) | Evidence | Risk | Status |
 |---|---|---|---|---|---|---|
-| K-01 | Page Geometry | module (charter) | module's "engine" (Size & Crop intent); `PageGeometry` value object; platform geometry domain (`02`, `04 §14, §20`) | charter, size_and_crop intent, `engine_neutral_geometry.py`, `04` | Decision 03 cannot be stated unambiguously | **A** (module and concepts separated now; platform name pending) |
+| K-01 | Page Geometry | module (charter) | module's "engine" (Size & Crop intent); `PageGeometry` value object; platform geometry domain (`02`, `04 §14, §20`) | charter, size_and_crop intent, `engine_neutral_geometry.py`, `04` | Decision 03 cannot be stated unambiguously | C (`MODULE.PAGE_GEOMETRY` vs `PLATFORM.GEOMETRY_CORE` "Platform Geometry Core") |
 | K-02 | Size & Crop vs Page Geometry | operator-facing module | label of the Page Geometry module? | `size_and_crop_module_intent.md`, index rows | duplicate module identity | **A** |
 | K-03 | Job | File Factory JobKind | product Job (design); "job signature" | `canonical_core/types.py`, `04 §17` | dev-infra semantics leak into product | C |
 | K-04 | Operator Workplace | development orchestrator workplace | prepress operator GUI | Orchestrator contract, prompt usage | wrong system addressed | C (devinfra keeps it; product name pending) |
@@ -148,7 +173,7 @@ lists the bare words below that must always be qualified.
 | K-13 | normalize | `normalize_boxes` GUI zeroing | rotation normalization; "Normalize-to-Zero" note; `normalizer/` direction; Page Geometry "canvas geometry normalization" | `core.py`, `rotation_normalizer.py`, readme notes, charter | hides legacy drift; vague operation class | C |
 | K-14 | crop | CropBox | content crop in Size & Crop / `SourceCropSpec`; "crop marks" | standards, PG transform, marks | CropBox mistaken for finishing | C |
 | K-15 | trim | TrimBox | Manual Trim module; trimming; trim marks | | Manual Trim edits more than TrimBox | C |
-| K-16 | cut / crop / trim mark | cut-mark registry umbrella | domain synonyms crop/trim mark; JDF CutMark | `cut_mark_profile_registry.py`, domain | three names, one object | C (trim-vs-crop label: A) |
+| K-16 | cut / crop / trim mark | cut-mark registry umbrella | domain synonyms crop/trim mark; JDF CutMark | `cut_mark_profile_registry.py`, domain | several names; whether trim mark and crop mark are one object is itself unverified | **S** (trim/crop relationship; no deprecation) |
 | K-17 | signature | folded section (booklet) | technical job signature label | Booklet lab, `signature_profile_registry` | severe in booklet + label work | C |
 | K-18 | profile | ICC profile | generated-result, verification, policy, cut-mark, signature profile | ICC, EN registry, registries | | C |
 | K-19 | layout | layout box / layout space | Step & Repeat `layout` dict; JDF Layout; Qt layouts | `page_geometry.py`, `step_repeat/backend/engine.py` | | C |
@@ -160,7 +185,7 @@ lists the bare words below that must always be qualified.
 | K-25 | Stage | Operator Workplace Stage 5 | Page Geometry Stage 7/8; Stage 2C | | | C (always qualify) |
 | K-26 | evidence | governance evidence package | File Factory EvidenceKind; operation provenance | | | C |
 | K-27 | bounding box / BBox | PDF form XObject BBox (standard) | computed content bounds | ISO 32000 XObject, analysis | standard key misread | C |
-| K-28 | Framebox / FrameBox | product frame intent | spelling imitates PDF box keys (`*Box`) and could be read as a standard box | human task | platform term presented as standard | C (concept) / A (materialization) |
+| K-28 | Framebox / frame intent | platform working frame (`GEOMETRY.FRAMEBOX`) | operator/machine intent to change it (`GEOMETRY.FRAME_INTENT`); spelling "FrameBox" imitates PDF box keys | human task | intent mistaken for the frame; platform term read as a standard box | C (concepts) / A (materialization) |
 | K-29 | slug | vendor "slug area" usage | lab "page-number slugs" | Booklet lab | vendor term as platform term | C |
 | K-30 | layout box basis (legacy) | TrimBox → ArtBox → CropBox → MediaBox | `core.normalize_boxes` TrimBox → BleedBox → MediaBox | `01 C-04` | legacy term still active | C (registered `LEGACY`) |
 | K-31 | action | operator UI action | D-05 filesystem action; product "Action" (Jobs) | button language doc, D-05 | | C |
@@ -168,10 +193,10 @@ lists the bare words below that must always be qualified.
 | K-33 | receipt | PFM verification receipt | File Factory review-context receipt | | | C |
 | K-34 | bleed | BleedBox | bleed region; bleed amount | standards, VAB | | C |
 
-`COLLISIONS_IDENTIFIED = 34`. Of these, 30 are canonicalizable now, 4 need an
-architectural decision (K-01 platform name, K-02, K-16 label choice, K-22),
-plus the materialization part of K-28. Standard review is required inside
-several entries rather than as a collision status (§16).
+`COLLISIONS_IDENTIFIED = 34`. Of these, 31 are canonicalizable now, 2 need an
+architectural decision (K-02, K-22) and 1 needs standard review (K-16). The
+materialization part of K-28 also needs a decision. Standard review is also
+flagged inside several entries rather than as a collision status (§16).
 
 ---
 
@@ -251,61 +276,86 @@ Rules: library defaults (PyMuPDF, pikepdf) are **not** the standard. Bare
 This section resolves the semantic part of Decision 03's blocker. It does
 not decide ownership design.
 
-### 9.1 The seven required distinctions
+### 9.1 The eight required distinctions
 
 | Concept | canonical_id | Class | Status | Is | Is not |
 |---|---|---|---|---|---|
 | **module Page Geometry** | `MODULE.PAGE_GEOMETRY` | MODULE_NAME | CANONICAL_V1 | the existing production transform module (page size, crop-or-pad, scaling, output boxes) | the platform geometry layer; the value object |
-| **platform geometry ownership concept** | `PLATFORM.GEOMETRY_CORE` | PLATFORM_TERM | **NEEDS_HUMAN_DECISION** (display name only) | platform layer owning layout box selection, layout size, orientation semantics, absolute ↔ layout transforms, GUI-facing geometry, page-frame semantics, geometry warnings | "Page Geometry"; the structural PDF core |
-| **Framebox** | `GEOMETRY.OPERATOR_FRAME_INTENT` | PLATFORM_TERM | CANONICAL_V1 (concept) | explicit operator production intent about the intended page/frame geometry | a PDF box; a second precedence chain |
-| **layout_box** | `GEOMETRY.LAYOUT_BOX` | PLATFORM_TERM | CANONICAL_V1 | the one rectangle chosen by TrimBox → ArtBox → CropBox → MediaBox | TrimBox; Framebox |
-| **PDF TrimBox** | `PDF.BOX.TRIM` | STANDARD_TERM | CANONICAL_V1 | standard finished-page boundary | the layout box (it is only the first candidate) |
-| **operation-specific clipping geometry** | `GEOMETRY.CLIP_REGION` | PLATFORM_TERM | CANONICAL_V1 | clip used by an algorithm (e.g. Step & Repeat clip, VAB mirror clips) | CropBox; a product frame |
-| **future contour-capable product geometry** | `GEOMETRY.PRODUCTION_CONTOUR` | PLATFORM_TERM | PROVISIONAL | non-rectangular outline of the finished object | layout box; a drawn finishing line (`TECHNICAL_OBJECT.FINISHING_CONTOUR`) |
+| **Platform Geometry Core** | `PLATFORM.GEOMETRY_CORE` | PLATFORM_TERM | CANONICAL_V1 | platform-owned owner of generic geometry semantics: layout box policy result, Framebox, coordinate spaces, absolute ↔ working-frame transforms, orientation semantics, working geometry descriptors, geometry diagnostics, normalization semantics | "Page Geometry"; `PLATFORM.STRUCTURAL_PDF_CORE` (raw PDF structure, bounded structural mutation) |
+| **PDF TrimBox** | `PDF.BOX.TRIM` | STANDARD_TERM | CANONICAL_V1 | standard PDF fact: finished-page boundary | the layout box (only its first candidate); the Framebox |
+| **layout_box** | `GEOMETRY.LAYOUT_BOX` | PLATFORM_TERM | CANONICAL_V1 | source-derived canonical layout basis chosen by TrimBox → ArtBox → CropBox → MediaBox | TrimBox; Framebox; frame intent |
+| **Framebox** | `GEOMETRY.FRAMEBOX` | PLATFORM_TERM | CANONICAL_V1 | platform-owned, internal, rectangular working / reference frame of the production object | a PDF box; the layout box; frame intent; a clip region; a production contour |
+| **frame intent** | `GEOMETRY.FRAME_INTENT` | PLATFORM_TERM | CANONICAL_V1 | explicit operator or machine-proposed intent to establish or modify the Framebox | the Framebox itself |
+| **operation-specific construction geometry** | `GEOMETRY.CLIP_REGION` | PLATFORM_TERM | CANONICAL_V1 | construction / clipping geometry used by a particular algorithm (e.g. Step & Repeat clip, Vector AutoBleed mirror clips) | a product frame; CropBox; Framebox |
+| **future contour-capable physical-object geometry** | `GEOMETRY.PRODUCTION_CONTOUR` | PLATFORM_TERM | PROVISIONAL | non-rectangular outline of the finished object | Framebox; layout box; a drawn finishing line (`TECHNICAL_OBJECT.FINISHING_CONTOUR`) |
+
+A Framebox may **coincide geometrically** with a PDF box, the layout box, a
+clip region or the bounding rectangle of a contour in a given case. It is
+never **semantically identical** to any of them.
 
 ### 9.2 Relationships
 
 ```text
-PDF facts (STRUCTURAL PDF CORE)
-  PDF.BOX.{MEDIA,CROP,BLEED,TRIM,ART}  + effective values + /Rotate + UserUnit + MediaBox origin
+PDF STRUCTURAL FACTS                      (PLATFORM.STRUCTURAL_PDF_CORE)
+  PDF.BOX.{MEDIA,CROP,BLEED,TRIM,ART} + effective values + /Rotate + UserUnit + MediaBox origin
         │
         ▼  POLICY.LAYOUT_BOX_PRIORITY   (TrimBox → ArtBox → CropBox → MediaBox)
-GEOMETRY.LAYOUT_BOX ───────────────► GEOMETRY.LAYOUT_SPACE   ([0,0,w,h]; GUI-facing)
-        ▲                                   │
-        │ materialized through               ├─ GEOMETRY.PLACEMENT_OBJECT_EXTENT  (W_obj = layout.width,
-        │ POLICY.FRAME_MATERIALIZATION        │                                    H_obj = layout.height)
-        │ (NOT_DECIDED)                       └─ GEOMETRY.GAP  (distance between neighbouring layout boxes)
-GEOMETRY.OPERATOR_FRAME_INTENT  ◄── OPERATION.KIND.DEFINE_FRAMEBOX (provisional)
+GEOMETRY.LAYOUT_BOX                       source-derived canonical layout basis
+        │
+        ▼  platform interpretation / normalization   (PLATFORM.GEOMETRY_CORE)
+GEOMETRY.FRAMEBOX                         platform working frame (initially derived from the layout box)
+        ▲
+        │ establishes / modifies (platform-approved semantics only)
+OPERATION.KIND.DEFINE_FRAMEBOX (provisional)
+        ▲
+        │ consumes
+GEOMETRY.FRAME_INTENT                     operator or machine-proposed intent
 
-GEOMETRY.CLIP_REGION        : per-operation, never exported as product geometry
+GEOMETRY.FRAMEBOX ──► POLICY.FRAME_MATERIALIZATION ──► PDF page boxes / other explicit representation
+                      (NOT_DECIDED)
+
+GEOMETRY.LAYOUT_SPACE       : [0,0,w,h] GUI-facing space anchored on the layout box; whether it
+                              follows the Framebox after an explicit frame operation is NOT_DECIDED
+GEOMETRY.PLACEMENT_OBJECT_EXTENT : W_obj = layout.width, H_obj = layout.height (product law)
+GEOMETRY.GAP                : distance between neighbouring layout boxes (product law)
+GEOMETRY.CLIP_REGION        : construction / clipping geometry of one algorithm; never a frame,
+                              never CropBox, never exported as product geometry (key for VAB)
+GEOMETRY.PRODUCTION_CONTOUR : future physical-object outline; in contour/nesting workflows it
+                              defines the product shape while the Framebox remains the rectangular
+                              reference / bounding / placement frame; for rectangular workflows the
+                              Framebox may suffice. Framebox is NOT made obsolete by contours.
 GEOMETRY.BLEED_REGION       : product domain; relates to PDF.BOX.BLEED and PRODUCTION.BLEED_AMOUNT
-GEOMETRY.PRODUCTION_CONTOUR : future; may later refine the frame beyond rectangles
 GEOMETRY.CONTENT_BOUNDS     : analysis result (provisional); ≠ ArtBox, ≠ XObject BBox
 GEOMETRY.LEGACY_LAYOUT_ZEROING (core.normalize_boxes) : LEGACY drift, not policy
 ```
 
-Law kept from `02` / `04`: downstream consumers receive **one** canonical
-page geometry result (`GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR`, code name
-`PageGeometry`). Operator frame intent is materialized into it explicitly. It
-never competes with the layout box at consumption time.
+Hard rule: **downstream modules must not choose between multiple hidden
+frame sources.** They consume one canonical platform working frame and
+geometry result (`GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR`, code name
+`PageGeometry`, which carries both the layout box and the Framebox). Frame
+intent changes the Framebox only through the platform-approved operation path.
+
+Ownership law: **no module owns generic PDF / geometry semantics.** Modules
+consume `PLATFORM.GEOMETRY_CORE` and `PLATFORM.STRUCTURAL_PDF_CORE` services
+and own only their operation-specific semantics (e.g. their clip regions).
 
 ### 9.3 Safe to canonize now
 
 layout box, layout box priority, layout space and coordinate spaces (engine-neutral
-contract), PDF boxes, clip region, bleed region, placement object extent, gap,
-operator frame intent (concept), module Page Geometry.
+contract), PDF boxes, Framebox, frame intent, clip region, bleed region,
+placement object extent, gap, module Page Geometry, Platform Geometry Core.
 
 ### 9.4 Provisional or open
 
-- Display name of `PLATFORM.GEOMETRY_CORE`. Candidates: *Geometry Core*,
-  *Page Frame Model*, *Geometry Interpretation Layer*. The one hard rule:
-  never "Page Geometry".
 - Name of `GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR`. The code class `PageGeometry`
   stays; the canonical name avoids the module collision.
-- Product label "Framebox". The spelling **FrameBox is deprecated** because it
-  imitates PDF page-box keys.
+- The spelling **FrameBox is deprecated** (it imitates PDF page-box keys);
+  the canonical name is *Framebox*.
 - `POLICY.FRAME_MATERIALIZATION` = NOT_DECIDED.
-- Content bounds, page orientation, production contour.
+- Whether `GEOMETRY.LAYOUT_SPACE` follows the Framebox once they diverge =
+  NOT_DECIDED (Decision 03 design).
+- Content bounds, page orientation, production contour (architecture not
+  finalized).
 
 ---
 
@@ -391,7 +441,7 @@ mode (provisional).
 |---|---|---|---|
 | `TECHNICAL_OBJECT.TECHNICAL_OBJECT` | technical object | CANONICAL_V1 | exact PDF representation NOT_DECIDED (OCG / ISO 19593 strong candidates) |
 | `…CUT_MARK` | cut mark (umbrella of cutting marks) | CANONICAL_V1 | matches the accepted cut-mark profile registry |
-| `…TRIM_MARK` | trim mark (alias *product trim mark*; deprecated alias *crop mark*) | PROVISIONAL | trim-vs-crop label needs Human confirmation; "crop" collides with CropBox |
+| `…TRIM_MARK` | trim mark (alias *product trim mark*) | NEEDS_STANDARD_REVIEW | TRIM_MARK / CROP_MARK relationship needs standards/domain review (possibly Human decision). "crop mark" is **not** deprecated: it is established professional usage, and the CropBox collision alone is not a reason to deprecate it |
 | `…CHUNK_BOUNDARY_MARK` | chunk-boundary corner mark | CANONICAL_V1 | registry family |
 | `…FOLD_MARK`, `…REGISTRATION_MARK` | | CANONICAL_V1 | established domain; JDF mentions fold and register marks |
 | `…COLLATING_MARK` | collating mark (staircase) | CANONICAL_V1 | standard alignment unverified |
@@ -463,11 +513,11 @@ citation, marked as such.
 | creep, shingling, signature (folded), trim/crop marks, bleed | ESTABLISHED_DOMAIN_TERM | industry explanatory sources | not standards |
 | lap shift, collating mark, contour registration mark, finishing contour | NEEDS_STANDARD_REVIEW | lab / domain usage | relation to "lip/overfold", JDF marks, ISO 19593 unverified |
 | slug | vendor/application usage | — | not treated as standard |
-| layout box, layout space, operator frame intent, clip region, admissibility, Operation Record | IMPOZITORIUM_EXTENSION | derived from standard PDF boxes / accepted decisions | explicitly not standard terms |
+| layout box, layout space, Framebox, frame intent, clip region, admissibility, Operation Record | IMPOZITORIUM_EXTENSION | derived from standard PDF boxes / accepted decisions | explicitly not standard terms |
 
 Registry totals: STANDARD_ALIGNED 13, STANDARD_TERM_WITH_PLATFORM_SPECIALIZATION
-5, ESTABLISHED_DOMAIN_TERM 19, NEEDS_STANDARD_REVIEW 13,
-IMPOZITORIUM_EXTENSION 108.
+5, ESTABLISHED_DOMAIN_TERM 18, NEEDS_STANDARD_REVIEW 14,
+IMPOZITORIUM_EXTENSION 109.
 
 ---
 
@@ -475,19 +525,19 @@ IMPOZITORIUM_EXTENSION 108.
 
 ```text
 FILE                     = semantic_registry_v1.yaml
-ENTRIES                  = 158
-CANONICAL_V1             = 111
-PROVISIONAL              = 32
-NEEDS_STANDARD_REVIEW    = 6
-NEEDS_HUMAN_DECISION     = 4
+ENTRIES                  = 159
+CANONICAL_V1             = 113
+PROVISIONAL              = 31
+NEEDS_STANDARD_REVIEW    = 7
+NEEDS_HUMAN_DECISION     = 3
 LEGACY                   = 5
-DEPRECATED (entries)     = 0   (deprecation is expressed as deprecated_aliases: 5)
+DEPRECATED (entries)     = 0   (deprecation is expressed as deprecated_aliases: 4)
 AMBIGUOUS_TERMS          = 29  (bare words that must be qualified; never resolvable)
 NAMESPACES               = 14
 SOURCES                  = 35
 ```
 
-Entries per namespace: PDF 19, GEOMETRY 19, PRODUCTION 20, OPERATION 17,
+Entries per namespace: PDF 19, GEOMETRY 20, PRODUCTION 20, OPERATION 17,
 DEVINFRA 14, TECHNICAL_OBJECT 14, ARTIFACT 13, GOVERNANCE 11, MODULE 10,
 ARCHITECTURE 5, PLATFORM 5, DIAGNOSTIC 4, POLICY 4, UI 3.
 
@@ -499,26 +549,26 @@ not_equivalent_to, relationships, owner, status, notes?`.
 
 ## 18. Provisional / unresolved terms
 
-**NEEDS_HUMAN_DECISION (4):**
+**NEEDS_HUMAN_DECISION (3):**
 
 | Entry | Question |
 |---|---|
-| `PLATFORM.GEOMETRY_CORE` | display name (never "Page Geometry") |
-| `POLICY.FRAME_MATERIALIZATION` | how operator frame intent becomes canonical geometry |
+| `POLICY.FRAME_MATERIALIZATION` | how the Framebox is materialized into PDF page boxes or another explicit representation |
 | `MODULE.SIZE_AND_CROP` | UI label of `MODULE.PAGE_GEOMETRY`, or a separate module |
 | `ARTIFACT.GENERATED_RESULT` | same concept as candidate, or a distinct lifecycle stage |
 
-**Label decisions recorded inside PROVISIONAL entries:** "trim mark" vs "crop
-mark"; product name for `UI.PRODUCT_WORKBENCH`; canonical name of
+**Label decisions recorded inside entries:** trim mark / crop mark
+relationship (NEEDS_STANDARD_REVIEW); product name for `UI.PRODUCT_WORKBENCH`; canonical name of
 `GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR`; whether Define Framebox is also a module
 surface; Create Booklet / Booklet Folding product-surface relationship.
 
-**NEEDS_STANDARD_REVIEW (6):** effective page box value, PDF/X conformance,
-processing steps, finished page, production intent, finishing contour line.
+**NEEDS_STANDARD_REVIEW (7):** effective page box value, PDF/X conformance,
+processing steps, finished page, production intent, finishing contour line,
+trim mark.
 Standard-review flags also sit on several CANONICAL_V1 entries (e.g. folded
 signature, collating mark) where the concept is settled but alignment is not.
 
-**PROVISIONAL (32):** among others, operation classes, diagnostic severity,
+**PROVISIONAL (31):** among others, operation classes, diagnostic severity,
 known/unknown bad, salvage mode, production job, lap shift, folding scheme,
 technical numbering, service text, structural PDF core, render service,
 production contour, content bounds.
@@ -531,9 +581,10 @@ production contour, content bounds.
 `GEOMETRY.TARGET_CANVAS` (module-local), `PRODUCTION.STEP_AND_REPEAT_LAYOUT`,
 `GOVERNANCE.OC_WORKSTREAM` (OC-n labels), `DEVINFRA.D01_KERNEL_MEDIATION`.
 
-**Deprecated aliases (5):** *FrameBox* → operator frame intent;
+**Deprecated aliases (4):** *FrameBox* → Framebox;
 *Normalize-to-Zero* → layout space; *Page Geometry engine* → module Page
-Geometry; *acceptance (artifact)* → artifact admission; *crop mark* → trim mark.
+Geometry; *acceptance (artifact)* → artifact admission. (*crop mark* is no
+longer deprecated; see §13.)
 
 **Must-qualify words (29, registry `ambiguous_terms`):** OC, Operator
 Workplace, Page Geometry, acceptance, action, admission, bleed, bounding box,
@@ -565,10 +616,15 @@ R9  NO AMBIGUOUS BARE WORD AS AN ALIAS; add it to ambiguous_terms instead
 R10 GOVERNANCE / DEVINFRA TERMS DO NOT ENTER PRODUCT RUNTIME VOCABULARY
 R11 MILESTONE LABELS (OC-n, D-0n, Gate, Stage) ALWAYS CARRY THEIR PREFIX
 R12 UI LABELS MAY BE SHORT; MACHINE IDS MUST BE NAMESPACED
+R13 NO MODULE OWNS GENERIC PDF / GEOMETRY SEMANTICS
+    (modules consume PLATFORM.GEOMETRY_CORE and PLATFORM.STRUCTURAL_PDF_CORE)
+R14 PROFESSIONAL CORRECTNESS OVER NAMESPACE TIDINESS
+    (do not deprecate an established professional term only to avoid a
+    name collision; disambiguate by namespace instead)
 ```
 
 Lightweight process: proposing agent adds a `PROVISIONAL` entry; an
-independent review checks R1–R12; Human acceptance moves it to
+independent review checks R1–R14; Human acceptance moves it to
 `CANONICAL_V1`. Labs may use local terms freely but must map them at
 promotion time.
 
@@ -581,25 +637,29 @@ MODULE_PAGE_GEOMETRY_DISAMBIGUATED = YES
     MODULE.PAGE_GEOMETRY  ≠  PLATFORM.GEOMETRY_CORE  ≠  GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
     ≠  OPERATION.KIND.PAGE_GEOMETRY_TRANSFORM
 
-FRAMEBOX                   = GEOMETRY.OPERATOR_FRAME_INTENT (concept CANONICAL_V1;
-                             label provisional; materialization NOT_DECIDED)
-LAYOUT_BOX                 = GEOMETRY.LAYOUT_BOX (CANONICAL_V1)
+PLATFORM_GEOMETRY_CORE     = PLATFORM.GEOMETRY_CORE "Platform Geometry Core" (CANONICAL_V1)
 PDF_TRIMBOX                = PDF.BOX.TRIM (CANONICAL_V1, STANDARD_ALIGNED)
+LAYOUT_BOX                 = GEOMETRY.LAYOUT_BOX (CANONICAL_V1)
+FRAMEBOX                   = GEOMETRY.FRAMEBOX (CANONICAL_V1; rectangular platform working frame)
+FRAME_INTENT               = GEOMETRY.FRAME_INTENT (CANONICAL_V1)
 CLIP_REGION                = GEOMETRY.CLIP_REGION (CANONICAL_V1)
 FUTURE_CONTOUR_GEOMETRY    = GEOMETRY.PRODUCTION_CONTOUR (PROVISIONAL)
+FRAME_MATERIALIZATION      = NOT_DECIDED
 
 DECISION_03_SEMANTIC_BLOCKER = RESOLVED
 ```
 
-All seven concepts required by the task now have distinct, non-overlapping
-canonical identities, so Decision 03 can be written without overloaded
-terms. Still open, but not blocking the semantic statement of Decision 03:
+All eight required concepts have distinct, non-overlapping canonical
+identities in both this document and the registry. Decision 03 can therefore
+be written without overloaded terms. Still open, but not blocking the
+semantic statement of Decision 03:
 
-1. the display name of `PLATFORM.GEOMETRY_CORE`;
-2. `POLICY.FRAME_MATERIALIZATION`;
+1. `POLICY.FRAME_MATERIALIZATION`;
+2. whether GUI layout space follows the Framebox once it diverges from the
+   layout box;
 3. `MODULE.SIZE_AND_CROP` relation;
-4. standards review of processing steps / PDF/X / JDF terms before technical
-   objects or production intent are designed.
+4. standards review of processing steps / PDF/X / JDF / trim-crop mark terms
+   before technical objects or production intent are designed.
 
 Also noted for the Coordinator: `04 §14` and `04 §20` use "Page Geometry"
 for the geometry semantic authority. Under this baseline that phrase should

@@ -147,7 +147,8 @@ ambiguous_terms:
   - DEVINFRA.EVIDENCE_KIND
   - OPERATION.PROVENANCE
   frame:
-  - GEOMETRY.OPERATOR_FRAME_INTENT
+  - GEOMETRY.FRAMEBOX
+  - GEOMETRY.FRAME_INTENT
   - GEOMETRY.LAYOUT_BOX
   layout:
   - GEOMETRY.LAYOUT_BOX
@@ -784,9 +785,9 @@ entries:
 - canonical_id: GEOMETRY.CLIP_REGION
   canonical_name: clip region
   semantic_class: PLATFORM_TERM
-  definition: Operation-specific clipping geometry used by an algorithm when placing or reusing content
-    (e.g. clip = layout box in Step & Repeat, mirror-region clips in Vector AutoBleed). Not a PDF page
-    box and not a product frame.
+  definition: Construction / clipping geometry used by a particular algorithm or operation (e.g. Step
+    & Repeat placement clip, Vector AutoBleed mirror-region clips). Never a product frame and never exported
+    as product geometry.
   domain: GEOMETRY
   source_basis:
   - SRC.REPO_STEP_REPEAT
@@ -797,12 +798,13 @@ entries:
   - clipping region
   deprecated_aliases: []
   not_equivalent_to:
+  - GEOMETRY.FRAMEBOX
   - GEOMETRY.LAYOUT_BOX
-  - GEOMETRY.OPERATOR_FRAME_INTENT
   - PDF.BOX.CROP
   relationships: []
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
+  notes: 'Important for Vector AutoBleed: its mirror clips are clip regions, not frames or CropBoxes.'
 - canonical_id: GEOMETRY.CONTENT_BOUNDS
   canonical_name: content bounds
   semantic_class: PLATFORM_TERM
@@ -821,6 +823,72 @@ entries:
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
   notes: No repository implementation found.
+- canonical_id: GEOMETRY.FRAMEBOX
+  canonical_name: Framebox
+  semantic_class: PLATFORM_TERM
+  definition: Platform-owned, internal, rectangular working / reference frame of the production object.
+    Initially derived from the layout box by platform interpretation; may afterwards be changed only through
+    platform-approved semantics (e.g. OPERATION.KIND.DEFINE_FRAMEBOX). Downstream modules consume this
+    one canonical working frame and never choose between hidden frame sources. It may coincide geometrically
+    with a PDF box, the layout box, a clip region or the bounding frame of a production contour in a particular
+    case, but is not semantically identical to any of them.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REVIEW_02
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - working frame
+  deprecated_aliases:
+  - FrameBox
+  not_equivalent_to:
+  - GEOMETRY.CLIP_REGION
+  - GEOMETRY.FRAME_INTENT
+  - GEOMETRY.LAYOUT_BOX
+  - GEOMETRY.PRODUCTION_CONTOUR
+  - PDF.BOX.ART
+  - PDF.BOX.BLEED
+  - PDF.BOX.CROP
+  - PDF.BOX.MEDIA
+  - PDF.BOX.TRIM
+  relationships:
+  - type: derived_initially_from
+    target: GEOMETRY.LAYOUT_BOX
+  - type: established_or_modified_by
+    target: OPERATION.KIND.DEFINE_FRAMEBOX
+  - type: materialized_by
+    target: POLICY.FRAME_MATERIALIZATION
+  - type: owned_by
+    target: PLATFORM.GEOMETRY_CORE
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: Rectangular by definition; remains valid when contour support (GEOMETRY.PRODUCTION_CONTOUR) is
+    added. Spelling 'FrameBox' deprecated because it imitates PDF page-box key naming.
+- canonical_id: GEOMETRY.FRAME_INTENT
+  canonical_name: frame intent
+  semantic_class: PLATFORM_TERM
+  definition: Explicit operator or machine-proposed intent to establish or modify the platform working
+    frame (GEOMETRY.FRAMEBOX). It is not the working frame itself.
+  domain: GEOMETRY
+  source_basis:
+  - SRC.HUMAN_TASK_05
+  - SRC.REVIEW_04
+  standard_alignment: IMPOZITORIUM_EXTENSION
+  aliases:
+  - operator frame intent
+  deprecated_aliases: []
+  not_equivalent_to:
+  - GEOMETRY.FRAMEBOX
+  - GEOMETRY.LAYOUT_BOX
+  - PDF.BOX.TRIM
+  relationships:
+  - type: consumed_by
+    target: OPERATION.KIND.DEFINE_FRAMEBOX
+  owner: PLATFORM.GEOMETRY_CORE
+  status: CANONICAL_V1
+  notes: Machine-proposed intent still requires the platform-approved operation path; it never alters
+    the Framebox directly.
 - canonical_id: GEOMETRY.GAP
   canonical_name: gap
   semantic_class: PRODUCTION_DOMAIN_TERM
@@ -842,9 +910,10 @@ entries:
 - canonical_id: GEOMETRY.LAYOUT_BOX
   canonical_name: layout box
   semantic_class: PLATFORM_TERM
-  definition: The single page rectangle selected by POLICY.LAYOUT_BOX_PRIORITY (TrimBox -> ArtBox -> CropBox
-    -> MediaBox) as the basis for layout-relative geometry. Exactly one canonical layout box per page
-    is exposed to downstream consumers.
+  definition: 'Source-derived platform layout basis: the single page rectangle selected from PDF structural
+    facts by POLICY.LAYOUT_BOX_PRIORITY (TrimBox -> ArtBox -> CropBox -> MediaBox). Exactly one canonical
+    layout box per page. It is the initial basis from which the platform working frame (GEOMETRY.FRAMEBOX)
+    may be derived; it is not itself the working frame.'
   domain: GEOMETRY
   source_basis:
   - SRC.HUMAN_TASK_05
@@ -857,7 +926,8 @@ entries:
   - layout_box
   deprecated_aliases: []
   not_equivalent_to:
-  - GEOMETRY.OPERATOR_FRAME_INTENT
+  - GEOMETRY.FRAMEBOX
+  - GEOMETRY.FRAME_INTENT
   - PDF.BOX.TRIM
   - PRODUCTION.STEP_AND_REPEAT_LAYOUT
   relationships:
@@ -865,6 +935,8 @@ entries:
     target: POLICY.LAYOUT_BOX_PRIORITY
   - type: defines_origin_of
     target: GEOMETRY.LAYOUT_SPACE
+  - type: initial_basis_of
+    target: GEOMETRY.FRAMEBOX
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
   notes: 'Platform term derived from standard PDF boxes. Legacy core.normalize_boxes uses an older basis
@@ -891,6 +963,9 @@ entries:
   relationships: []
   owner: PLATFORM.GEOMETRY_CORE
   status: CANONICAL_V1
+  notes: Initially the Framebox coincides with the layout box. Whether GUI-facing space stays anchored
+    on the layout box or follows the Framebox after an explicit frame operation is NOT_DECIDED (belongs
+    to Decision 03 design).
 - canonical_id: GEOMETRY.LEGACY_LAYOUT_ZEROING
   canonical_name: legacy layout zeroing
   semantic_class: LEGACY_TERM
@@ -907,45 +982,15 @@ entries:
   - GEOMETRY.LAYOUT_SPACE
   - OPERATION.KIND.ROTATION_NORMALIZATION
   relationships: []
-  owner: MODULE.PREFLIGHT
+  owner: PLATFORM.GEOMETRY_CORE
   status: LEGACY
   notes: Transitional implementation drift from POLICY.LAYOUT_BOX_PRIORITY.
-- canonical_id: GEOMETRY.OPERATOR_FRAME_INTENT
-  canonical_name: operator frame intent (Framebox)
-  semantic_class: PLATFORM_TERM
-  definition: Explicit operator production intent establishing the intended page/frame geometry when incoming
-    PDF geometry is absent, unsuitable, ambiguous or operationally wrong for the printed object. It must
-    be materialized into the one canonical page geometry result through an explicit, structurally recorded
-    mechanism; it never forms a parallel hidden precedence chain beside the layout box priority.
-  domain: GEOMETRY
-  source_basis:
-  - SRC.HUMAN_TASK_05
-  - SRC.REVIEW_02
-  - SRC.REVIEW_04
-  standard_alignment: IMPOZITORIUM_EXTENSION
-  aliases:
-  - Framebox
-  - frame intent
-  deprecated_aliases:
-  - FrameBox
-  not_equivalent_to:
-  - GEOMETRY.CLIP_REGION
-  - GEOMETRY.LAYOUT_BOX
-  - PDF.BOX.TRIM
-  relationships:
-  - type: established_by
-    target: OPERATION.KIND.DEFINE_FRAMEBOX
-  - type: materialization_policy
-    target: POLICY.FRAME_MATERIALIZATION
-  owner: PLATFORM.GEOMETRY_CORE
-  status: CANONICAL_V1
-  notes: Concept canonical; product label 'Framebox' provisional; spelling 'FrameBox' deprecated because
-    it imitates PDF page-box key naming and could be mistaken for a standard box.
 - canonical_id: GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
   canonical_name: page geometry descriptor
   semantic_class: PLATFORM_TERM
-  definition: The immutable engine-neutral value describing one page's boxes (with provenance), rotation,
-    layout box and derived transforms. The canonical PageGeometry result consumed downstream.
+  definition: 'The immutable engine-neutral working geometry descriptor of one page: boxes (with provenance),
+    rotation, layout box, Framebox and derived transforms. The one canonical geometry result consumed
+    downstream.'
   domain: GEOMETRY
   source_basis:
   - SRC.REPO_ENGINE_NEUTRAL_GEOMETRY
@@ -957,7 +1002,11 @@ entries:
   not_equivalent_to:
   - MODULE.PAGE_GEOMETRY
   - PLATFORM.GEOMETRY_CORE
-  relationships: []
+  relationships:
+  - type: carries
+    target: GEOMETRY.LAYOUT_BOX
+  - type: carries
+    target: GEOMETRY.FRAMEBOX
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
   notes: Code class name PageGeometry remains; canonical_name chosen to avoid collision with MODULE.PAGE_GEOMETRY.
@@ -1002,8 +1051,10 @@ entries:
 - canonical_id: GEOMETRY.PRODUCTION_CONTOUR
   canonical_name: production contour
   semantic_class: PLATFORM_TERM
-  definition: 'Future contour-capable product geometry: arbitrary (non-rectangular) outline of the finished
-    object used by cutting/finishing.'
+  definition: 'Future contour-capable physical-object geometry: arbitrary (non-rectangular) outline of
+    the finished object. In contour/nesting workflows it defines the actual product shape while the Framebox
+    remains the rectangular reference / bounding / placement frame. For rectangular workflows the Framebox
+    may be sufficient on its own.'
   domain: GEOMETRY
   source_basis:
   - SRC.REPO_FUTURE_PLACEMENT
@@ -1014,13 +1065,16 @@ entries:
   - die line
   deprecated_aliases: []
   not_equivalent_to:
+  - GEOMETRY.FRAMEBOX
   - GEOMETRY.LAYOUT_BOX
   - TECHNICAL_OBJECT.FINISHING_CONTOUR
-  relationships: []
+  relationships:
+  - type: referenced_by_frame
+    target: GEOMETRY.FRAMEBOX
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
-  notes: The geometry of the finished object; TECHNICAL_OBJECT.FINISHING_CONTOUR is the marked line drawn
-    for a device.
+  notes: Contour architecture NOT finalized. TECHNICAL_OBJECT.FINISHING_CONTOUR is the drawn line for
+    a device.
 - canonical_id: GEOMETRY.SPACE.DEVICE_PIXEL
   canonical_name: device pixel space
   semantic_class: PLATFORM_TERM
@@ -1563,7 +1617,8 @@ entries:
 - canonical_id: OPERATION.KIND.DEFINE_FRAMEBOX
   canonical_name: Define Framebox operation
   semantic_class: OPERATION_KIND
-  definition: Operation establishing GEOMETRY.OPERATOR_FRAME_INTENT for pages.
+  definition: Platform-approved operation that consumes GEOMETRY.FRAME_INTENT and establishes or modifies
+    GEOMETRY.FRAMEBOX for pages.
   domain: OPERATION
   source_basis:
   - SRC.HUMAN_TASK_05
@@ -1572,10 +1627,15 @@ entries:
   - Define Framebox
   deprecated_aliases: []
   not_equivalent_to: []
-  relationships: []
+  relationships:
+  - type: consumes
+    target: GEOMETRY.FRAME_INTENT
+  - type: establishes_or_modifies
+    target: GEOMETRY.FRAMEBOX
   owner: PLATFORM.GEOMETRY_CORE
   status: PROVISIONAL
-  notes: Whether it is also a separate module surface is NOT_DECIDED.
+  notes: 'Whether it is also a separate module surface is NOT_DECIDED. Materialization into PDF boxes:
+    POLICY.FRAME_MATERIALIZATION (NOT_DECIDED).'
 - canonical_id: OPERATION.KIND.MANUAL_TRIM
   canonical_name: Manual Trim operation
   semantic_class: OPERATION_KIND
@@ -1864,8 +1924,8 @@ entries:
   - TrimBox
   deprecated_aliases: []
   not_equivalent_to:
+  - GEOMETRY.FRAMEBOX
   - GEOMETRY.LAYOUT_BOX
-  - GEOMETRY.OPERATOR_FRAME_INTENT
   - MODULE.MANUAL_TRIM
   relationships:
   - type: first_priority_input_of
@@ -2108,16 +2168,20 @@ entries:
   owner: PLATFORM
   status: CANONICAL_V1
 - canonical_id: PLATFORM.GEOMETRY_CORE
-  canonical_name: platform geometry core
+  canonical_name: Platform Geometry Core
   semantic_class: PLATFORM_TERM
-  definition: 'The platform-owned geometry interpretation layer: layout box selection, layout size, orientation
-    semantics, absolute <-> layout-relative transforms, GUI-facing geometry, page-frame semantics, geometry
-    warnings. Distinct from the module named Page Geometry.'
+  definition: 'Platform-owned owner of generic geometry semantics: layout box policy result, Framebox,
+    coordinate spaces, absolute <-> working-frame transforms, orientation semantics, working geometry
+    descriptors, geometry diagnostics and normalization semantics. Distinct from PLATFORM.STRUCTURAL_PDF_CORE
+    (raw PDF structure and bounded structural mutation) and from the module named Page Geometry. Law:
+    no module owns generic PDF / geometry semantics; modules consume platform services.'
   domain: PLATFORM
   source_basis:
   - SRC.REVIEW_02
+  - SRC.HUMAN_TASK_05
   standard_alignment: IMPOZITORIUM_EXTENSION
-  aliases: []
+  aliases:
+  - Geometry Core
   deprecated_aliases: []
   not_equivalent_to:
   - GEOMETRY.PAGE_GEOMETRY_DESCRIPTOR
@@ -2125,9 +2189,8 @@ entries:
   - PLATFORM.STRUCTURAL_PDF_CORE
   relationships: []
   owner: PLATFORM
-  status: NEEDS_HUMAN_DECISION
-  notes: 'Concept identity fixed by this id; display name is PROVISIONAL. Candidate names: ''Geometry
-    Core'', ''Page Frame Model'', ''Geometry Interpretation Layer''. Must never be called ''Page Geometry''.'
+  status: CANONICAL_V1
+  notes: Must never be called 'Page Geometry'.
 - canonical_id: PLATFORM.RENDER_SERVICE
   canonical_name: render service
   semantic_class: PLATFORM_TERM
@@ -2180,8 +2243,8 @@ entries:
 - canonical_id: POLICY.FRAME_MATERIALIZATION
   canonical_name: frame materialization policy
   semantic_class: POLICY_TERM
-  definition: Policy deciding how operator frame intent becomes canonical page geometry (e.g. structural
-    box mutation, recorded intent, or another explicit representation).
+  definition: Policy deciding how the platform working frame (GEOMETRY.FRAMEBOX) is materialized into
+    PDF page boxes or another explicit structural representation when output is written.
   domain: POLICY
   source_basis:
   - SRC.REVIEW_02
@@ -2795,18 +2858,18 @@ entries:
   source_basis:
   - SRC.DOMAIN_PRINT
   - SRC.REPO_MARK_REGISTRIES
-  standard_alignment: ESTABLISHED_DOMAIN_TERM
+  standard_alignment: NEEDS_STANDARD_REVIEW
   aliases:
   - product trim mark
-  deprecated_aliases:
-  - crop mark
+  deprecated_aliases: []
   not_equivalent_to:
   - PDF.BOX.CROP
   relationships: []
   owner: TECHNICAL_OBJECT
-  status: PROVISIONAL
-  notes: Canonical choice between 'trim mark' and 'crop mark' NEEDS Human confirmation; 'crop' collides
-    with CropBox.
+  status: NEEDS_STANDARD_REVIEW
+  notes: 'TRIM_MARK / CROP_MARK relationship = NEEDS_STANDARD_REVIEW (and possibly NEEDS_HUMAN_DECISION).
+    ''crop mark'' is NOT deprecated: it is established professional usage; the CropBox collision alone
+    is not a reason to deprecate it.'
 - canonical_id: UI.ACTION
   canonical_name: operator action
   semantic_class: PLATFORM_TERM
