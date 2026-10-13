@@ -1,0 +1,22 @@
+# Lab harness runs (Linux, Python 3.13.16, PyMuPDF 1.28.2), mirror commit c8c65c57
+run_compiler_tests: 8 PASS, 0 FAIL, last line: [RESULT] Compiler verification passed.
+run_grouping_tests: 3 PASS, 0 FAIL, last line: [RESULT] Grouping verification passed.
+run_placement_tests: 6 PASS, 0 FAIL, last line: [RESULT] Placement verification passed.
+run_probe_tests: 3 PASS, 0 FAIL, last line: [RESULT] Probe verification passed.
+run_transform_tests: 3 PASS, 0 FAIL, last line: [RESULT] Transform verification passed.
+
+# rounded_square_probe.py
+status OK shapes 1 is_circular True diameter_mm 40.0
+placements 67 warnings ['GEOMETRIC_CLOSURE_FALLBACK_USED', 'TRAVERSAL_POLICY_APPLIED', 'MACHINE_PROFILE_APPLIED']
+min boundary distance mm -2.761 pairs violating 3mm gap 108
+
+# circle_strategies.py
+diameters 15..120 mm step 0.5, gap 3 mm, area 430x290
+Alpha hex < square grid: 32 cases; examples: [(38.5, 67, 70, 72), (44.5, 51, 54, 55), (45.0, 51, 54, 55), (55.0, 33, 35, 36), (55.5, 33, 35, 36), (64.0, 22, 24, 25)]
+hex rotated 90 > Alpha hex: 88 cases; examples: [(16.0, 374, 377), (18.5, 293, 299), (19.5, 259, 275), (21.0, 228, 230), (23.0, 192, 200), (23.5, 186, 189)]
+max relative shortfall of Alpha hex vs best of {square, rotated hex}: 33.3% at d=114.0 (alpha=6 square=6 rot=8)
+
+# roll_strip_circles.py
+fixed hex, rows across: per row 1 1 row pitch 34.64 -> 28.9 pcs/m
+fixed hex, columns along feed: 1 -> 25.0 pcs/m
+fitted lattice: v1=(64,0) v2=(32,24) -> 41.7 pcs/m
