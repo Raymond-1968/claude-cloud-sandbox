@@ -1,0 +1,167 @@
+{
+  "status": "SANDBOX_RESEARCH_ONLY",
+  "units": "pt (PDF user space, y up, origin = sheet lower-left)",
+  "sheet": [
+    0,
+    0,
+    1275.5906,
+    907.0866
+  ],
+  "knife_field": [
+    79.6652,
+    42.5633,
+    1261.7121,
+    892.9573
+  ],
+  "marks": [
+    [
+      127.8541,
+      17.051,
+      142.0271,
+      31.2239
+    ],
+    [
+      1190.8463,
+      17.051,
+      1205.0192,
+      31.2239
+    ]
+  ],
+  "sample": {
+    "cut_layer": "CutContour",
+    "hole_layer": "Holes",
+    "contour_bbox": [
+      0.0,
+      -0.0054,
+      221.1021,
+      221.0967
+    ],
+    "bleed_box": [
+      -5.6693,
+      -5.6693,
+      226.7717,
+      226.7717
+    ],
+    "holes": 1
+  },
+  "layout": {
+    "strategy": "grid, centred in knife field",
+    "nx": 5,
+    "ny": 3,
+    "gap_mm": 4.0,
+    "lead_edge_assumed": "left",
+    "orientation": "identity (0 deg, no reflection)"
+  },
+  "instances": [
+    {
+      "col": 0,
+      "row": 0,
+      "tx": 95.25623464566931,
+      "ty": 589.6553326771652,
+      "cut_sequence": 0
+    },
+    {
+      "col": 0,
+      "row": 1,
+      "tx": 95.25623464566931,
+      "ty": 357.21464999999995,
+      "cut_sequence": 1
+    },
+    {
+      "col": 0,
+      "row": 2,
+      "tx": 95.25623464566931,
+      "ty": 124.77396732283454,
+      "cut_sequence": 2
+    },
+    {
+      "col": 1,
+      "row": 2,
+      "tx": 327.6969173228347,
+      "ty": 124.77396732283454,
+      "cut_sequence": 3
+    },
+    {
+      "col": 1,
+      "row": 1,
+      "tx": 327.6969173228347,
+      "ty": 357.21464999999995,
+      "cut_sequence": 4
+    },
+    {
+      "col": 1,
+      "row": 0,
+      "tx": 327.6969173228347,
+      "ty": 589.6553326771652,
+      "cut_sequence": 5
+    },
+    {
+      "col": 2,
+      "row": 0,
+      "tx": 560.1376,
+      "ty": 589.6553326771652,
+      "cut_sequence": 6
+    },
+    {
+      "col": 2,
+      "row": 1,
+      "tx": 560.1376,
+      "ty": 357.21464999999995,
+      "cut_sequence": 7
+    },
+    {
+      "col": 2,
+      "row": 2,
+      "tx": 560.1376,
+      "ty": 124.77396732283454,
+      "cut_sequence": 8
+    },
+    {
+      "col": 3,
+      "row": 2,
+      "tx": 792.5782826771655,
+      "ty": 124.77396732283454,
+      "cut_sequence": 9
+    },
+    {
+      "col": 3,
+      "row": 1,
+      "tx": 792.5782826771655,
+      "ty": 357.21464999999995,
+      "cut_sequence": 10
+    },
+    {
+      "col": 3,
+      "row": 0,
+      "tx": 792.5782826771655,
+      "ty": 589.6553326771652,
+      "cut_sequence": 11
+    },
+    {
+      "col": 4,
+      "row": 0,
+      "tx": 1025.0189653543307,
+      "ty": 589.6553326771652,
+      "cut_sequence": 12
+    },
+    {
+      "col": 4,
+      "row": 1,
+      "tx": 1025.0189653543307,
+      "ty": 357.21464999999995,
+      "cut_sequence": 13
+    },
+    {
+      "col": 4,
+      "row": 2,
+      "tx": 1025.0189653543307,
+      "ty": 124.77396732283454,
+      "cut_sequence": 14
+    }
+  ],
+  "outputs": {
+    "print_pdf": "graphtec_print_test_A_grid.pdf",
+    "cut_ai": "graphtec_cut_test_A_grid.ai",
+    "cut_preview_pdf": "graphtec_cut_test_A_grid_preview.pdf"
+  }
+}
